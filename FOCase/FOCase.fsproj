@@ -6,7 +6,14 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <Compile Include="Library.fs"/>
+        <Compile Include="Library.fs" />
+        <Folder Include="Core\" />
+        <Compile Include="Store\Persistence.fs" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Freql.Sqlite" Version="0.9.2" />
+      <PackageReference Include="FsToolbox" Version="0.5.0" />
     </ItemGroup>
 
 </Project>
