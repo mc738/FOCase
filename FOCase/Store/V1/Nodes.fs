@@ -18,8 +18,14 @@ module Nodes =
     let get (ctx: SqliteContext) (id: string) =
         Operations.selectNodeRecord ctx [ "WHERE id = @0" ] [ id ]
 
-    let getMetadataValue (ctx: SqliteContext) = ()
-    
+    let getMetadataValue (ctx: SqliteContext) (nodeId: string) (key: string) =
+        Operations.selectNodeMetadataItemRecord ctx [ "WHERE node_id = @0 AND item_key = @1" ] [ nodeId; key ]
+
     let addMetadataValue (ctx: SqliteContext) (nodeId: string) (key: string) (value: string) =
-        
+        ({ NodeId = nodeId
+           ItemKey = key
+           ItemValue = value }
+        : Parameters.NewNodeMetadataItem)
+
+
         ()
