@@ -24,8 +24,10 @@ module Nodes =
     let addMetadataValue (ctx: SqliteContext) (nodeId: string) (key: string) (value: string) =
         ({ NodeId = nodeId
            ItemKey = key
-           ItemValue = value }
+           ItemValue = value
+           CreatedOn = getTimestamp ()
+           Active = true }
         : Parameters.NewNodeMetadataItem)
+        |> Operations.insertNodeMetadataItem ctx
 
-
-        ()
+    let 

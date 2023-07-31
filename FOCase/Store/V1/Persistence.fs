@@ -5,7 +5,7 @@ open System.Text.Json.Serialization
 open Freql.Core.Common
 open Freql.Sqlite
 
-/// Module generated on 30/07/2023 20:28:42 (utc) via Freql.Tools.
+/// Module generated on 31/07/2023 11:50:13 (utc) via Freql.Tools.
 [<RequireQualifiedAccess>]
 module Records =
     /// A record representing a row in the table `compression_types`.
@@ -34,18 +34,22 @@ module Records =
     type ConnectionDocumentMetadataItem =
         { [<JsonPropertyName("connectionDocumentId")>] ConnectionDocumentId: string
           [<JsonPropertyName("itemKey")>] ItemKey: string
-          [<JsonPropertyName("itemValue")>] ItemValue: string }
+          [<JsonPropertyName("itemValue")>] ItemValue: string
+          [<JsonPropertyName("createdOn")>] CreatedOn: DateTime
+          [<JsonPropertyName("active")>] Active: bool }
     
         static member Blank() =
             { ConnectionDocumentId = String.Empty
               ItemKey = String.Empty
-              ItemValue = String.Empty }
+              ItemValue = String.Empty
+              CreatedOn = DateTime.UtcNow
+              Active = true }
     
         static member CreateTableSql() = """
         CREATE TABLE connection_document_metadata (
 	connection_document_id TEXT NOT NULL,
 	item_key TEXT NOT NULL,
-	item_value TEXT NOT NULL,
+	item_value TEXT NOT NULL, created_on TEXT NOT NULL, active INTEGER NOT NULL,
 	CONSTRAINT connection_document_metadata_PK PRIMARY KEY (connection_document_id,item_key),
 	CONSTRAINT connection_document_metadata_FK FOREIGN KEY (connection_document_id) REFERENCES connection_documents(id)
 )
@@ -55,7 +59,9 @@ module Records =
         SELECT
               connection_document_metadata.`connection_document_id`,
               connection_document_metadata.`item_key`,
-              connection_document_metadata.`item_value`
+              connection_document_metadata.`item_value`,
+              connection_document_metadata.`created_on`,
+              connection_document_metadata.`active`
         FROM connection_document_metadata
         """
     
@@ -233,18 +239,22 @@ module Records =
     type ConnectionMetadataItem =
         { [<JsonPropertyName("connectionId")>] ConnectionId: string
           [<JsonPropertyName("itemKey")>] ItemKey: string
-          [<JsonPropertyName("itemValue")>] ItemValue: string }
+          [<JsonPropertyName("itemValue")>] ItemValue: string
+          [<JsonPropertyName("createdOn")>] CreatedOn: DateTime
+          [<JsonPropertyName("active")>] Active: bool }
     
         static member Blank() =
             { ConnectionId = String.Empty
               ItemKey = String.Empty
-              ItemValue = String.Empty }
+              ItemValue = String.Empty
+              CreatedOn = DateTime.UtcNow
+              Active = true }
     
         static member CreateTableSql() = """
         CREATE TABLE connection_metadata (
 	connection_id TEXT NOT NULL,
 	item_key TEXT NOT NULL,
-	item_value TEXT NOT NULL,
+	item_value TEXT NOT NULL, created_on TEXT NOT NULL, active INTEGER NOT NULL,
 	CONSTRAINT connection_metadata_PK PRIMARY KEY (connection_id,item_key),
 	CONSTRAINT connection_metadata_FK FOREIGN KEY (connection_id) REFERENCES connections(id)
 )
@@ -254,7 +264,9 @@ module Records =
         SELECT
               connection_metadata.`connection_id`,
               connection_metadata.`item_key`,
-              connection_metadata.`item_value`
+              connection_metadata.`item_value`,
+              connection_metadata.`created_on`,
+              connection_metadata.`active`
         FROM connection_metadata
         """
     
@@ -351,18 +363,22 @@ module Records =
     type ConnectionResourceMetadataItem =
         { [<JsonPropertyName("connectionResourceId")>] ConnectionResourceId: string
           [<JsonPropertyName("itemKey")>] ItemKey: string
-          [<JsonPropertyName("itemValue")>] ItemValue: string }
+          [<JsonPropertyName("itemValue")>] ItemValue: string
+          [<JsonPropertyName("createdOn")>] CreatedOn: DateTime
+          [<JsonPropertyName("active")>] Active: bool }
     
         static member Blank() =
             { ConnectionResourceId = String.Empty
               ItemKey = String.Empty
-              ItemValue = String.Empty }
+              ItemValue = String.Empty
+              CreatedOn = DateTime.UtcNow
+              Active = true }
     
         static member CreateTableSql() = """
         CREATE TABLE connection_resource_metadata (
 	connection_resource_id TEXT NOT NULL,
 	item_key TEXT NOT NULL,
-	item_value TEXT NOT NULL,
+	item_value TEXT NOT NULL, created_on TEXT NOT NULL, active INTEGER NOT NULL,
 	CONSTRAINT connection_resource_metadata_PK PRIMARY KEY (connection_resource_id,item_key),
 	CONSTRAINT connection_resource_metadata_FK FOREIGN KEY (connection_resource_id) REFERENCES connection_resources(id)
 )
@@ -372,7 +388,9 @@ module Records =
         SELECT
               connection_resource_metadata.`connection_resource_id`,
               connection_resource_metadata.`item_key`,
-              connection_resource_metadata.`item_value`
+              connection_resource_metadata.`item_value`,
+              connection_resource_metadata.`created_on`,
+              connection_resource_metadata.`active`
         FROM connection_resource_metadata
         """
     
@@ -1016,22 +1034,55 @@ module Records =
     
         static member TableName() = "encryption_types"
     
+    /// A record representing a row in the table `events`.
+    type Events =
+        { [<JsonPropertyName("eventType")>] EventType: string
+          [<JsonPropertyName("eventTimestamp")>] EventTimestamp: DateTime
+          [<JsonPropertyName("eventBlob")>] EventBlob: string }
+    
+        static member Blank() =
+            { EventType = String.Empty
+              EventTimestamp = DateTime.UtcNow
+              EventBlob = String.Empty }
+    
+        static member CreateTableSql() = """
+        CREATE TABLE events (
+	event_type TEXT NOT NULL,
+	event_timestamp TEXT NOT NULL,
+	event_blob TEXT NOT NULL
+)
+        """
+    
+        static member SelectSql() = """
+        SELECT
+              events.`event_type`,
+              events.`event_timestamp`,
+              events.`event_blob`
+        FROM events
+        """
+    
+        static member TableName() = "events"
+    
     /// A record representing a row in the table `external_connection_document_metadata`.
     type ExternalConnectionDocumentMetadataItem =
         { [<JsonPropertyName("externalConnectionDocumentId")>] ExternalConnectionDocumentId: string
           [<JsonPropertyName("itemKey")>] ItemKey: string
-          [<JsonPropertyName("itemValue")>] ItemValue: string }
+          [<JsonPropertyName("itemValue")>] ItemValue: string
+          [<JsonPropertyName("createdOn")>] CreatedOn: DateTime
+          [<JsonPropertyName("active")>] Active: bool }
     
         static member Blank() =
             { ExternalConnectionDocumentId = String.Empty
               ItemKey = String.Empty
-              ItemValue = String.Empty }
+              ItemValue = String.Empty
+              CreatedOn = DateTime.UtcNow
+              Active = true }
     
         static member CreateTableSql() = """
         CREATE TABLE external_connection_document_metadata (
 	external_connection_document_id TEXT NOT NULL,
 	item_key TEXT NOT NULL,
-	item_value TEXT NOT NULL,
+	item_value TEXT NOT NULL, created_on TEXT NOT NULL, active INTEGER NOT NULL,
 	CONSTRAINT external_connection_document_metadata_PK PRIMARY KEY (external_connection_document_id,item_key),
 	CONSTRAINT external_connection_document_metadata_FK FOREIGN KEY (external_connection_document_id) REFERENCES external_connection_documents(id)
 )
@@ -1041,7 +1092,9 @@ module Records =
         SELECT
               external_connection_document_metadata.`external_connection_document_id`,
               external_connection_document_metadata.`item_key`,
-              external_connection_document_metadata.`item_value`
+              external_connection_document_metadata.`item_value`,
+              external_connection_document_metadata.`created_on`,
+              external_connection_document_metadata.`active`
         FROM external_connection_document_metadata
         """
     
@@ -1219,18 +1272,22 @@ module Records =
     type ExternalConnectionMetadataItem =
         { [<JsonPropertyName("externalConnectionId")>] ExternalConnectionId: string
           [<JsonPropertyName("itemKey")>] ItemKey: string
-          [<JsonPropertyName("itemValue")>] ItemValue: string }
+          [<JsonPropertyName("itemValue")>] ItemValue: string
+          [<JsonPropertyName("createdOn")>] CreatedOn: DateTime
+          [<JsonPropertyName("active")>] Active: bool }
     
         static member Blank() =
             { ExternalConnectionId = String.Empty
               ItemKey = String.Empty
-              ItemValue = String.Empty }
+              ItemValue = String.Empty
+              CreatedOn = DateTime.UtcNow
+              Active = true }
     
         static member CreateTableSql() = """
         CREATE TABLE external_connection_metadata (
 	external_connection_id TEXT NOT NULL,
 	item_key TEXT NOT NULL,
-	item_value TEXT NOT NULL,
+	item_value TEXT NOT NULL, created_on TEXT NOT NULL, active INTEGER NOT NULL,
 	CONSTRAINT external_connection_metadata_PK PRIMARY KEY (external_connection_id,item_key),
 	CONSTRAINT external_connection_metadata_FK FOREIGN KEY (external_connection_id) REFERENCES external_connections(id)
 )
@@ -1240,7 +1297,9 @@ module Records =
         SELECT
               external_connection_metadata.`external_connection_id`,
               external_connection_metadata.`item_key`,
-              external_connection_metadata.`item_value`
+              external_connection_metadata.`item_value`,
+              external_connection_metadata.`created_on`,
+              external_connection_metadata.`active`
         FROM external_connection_metadata
         """
     
@@ -1337,18 +1396,22 @@ module Records =
     type ExternalConnectionResourceMetadataItem =
         { [<JsonPropertyName("externalConnectionResourceId")>] ExternalConnectionResourceId: string
           [<JsonPropertyName("itemKey")>] ItemKey: string
-          [<JsonPropertyName("itemValue")>] ItemValue: string }
+          [<JsonPropertyName("itemValue")>] ItemValue: string
+          [<JsonPropertyName("createdOn")>] CreatedOn: DateTime
+          [<JsonPropertyName("active")>] Active: bool }
     
         static member Blank() =
             { ExternalConnectionResourceId = String.Empty
               ItemKey = String.Empty
-              ItemValue = String.Empty }
+              ItemValue = String.Empty
+              CreatedOn = DateTime.UtcNow
+              Active = true }
     
         static member CreateTableSql() = """
         CREATE TABLE external_connection_resource_metadata (
 	external_connection_resource_id TEXT NOT NULL,
 	item_key TEXT NOT NULL,
-	item_value TEXT NOT NULL,
+	item_value TEXT NOT NULL, created_on TEXT NOT NULL, active INTEGER NOT NULL,
 	CONSTRAINT external_connection_resource_metadata_PK PRIMARY KEY (external_connection_resource_id,item_key),
 	CONSTRAINT external_connection_resource_metadata_FK FOREIGN KEY (external_connection_resource_id) REFERENCES external_connection_resources(id)
 )
@@ -1358,7 +1421,9 @@ module Records =
         SELECT
               external_connection_resource_metadata.`external_connection_resource_id`,
               external_connection_resource_metadata.`item_key`,
-              external_connection_resource_metadata.`item_value`
+              external_connection_resource_metadata.`item_value`,
+              external_connection_resource_metadata.`created_on`,
+              external_connection_resource_metadata.`active`
         FROM external_connection_resource_metadata
         """
     
@@ -1663,18 +1728,22 @@ module Records =
     type NodeDocumentMetadataItem =
         { [<JsonPropertyName("nodeDocumentId")>] NodeDocumentId: string
           [<JsonPropertyName("itemKey")>] ItemKey: string
-          [<JsonPropertyName("itemValue")>] ItemValue: string }
+          [<JsonPropertyName("itemValue")>] ItemValue: string
+          [<JsonPropertyName("createdOn")>] CreatedOn: DateTime
+          [<JsonPropertyName("active")>] Active: bool }
     
         static member Blank() =
             { NodeDocumentId = String.Empty
               ItemKey = String.Empty
-              ItemValue = String.Empty }
+              ItemValue = String.Empty
+              CreatedOn = DateTime.UtcNow
+              Active = true }
     
         static member CreateTableSql() = """
         CREATE TABLE node_document_metadata (
 	node_document_id TEXT NOT NULL,
 	item_key TEXT NOT NULL,
-	item_value TEXT NOT NULL,
+	item_value TEXT NOT NULL, created_on TEXT NOT NULL, active INTEGER NOT NULL,
 	CONSTRAINT node_document_metadata_PK PRIMARY KEY (node_document_id,item_key),
 	CONSTRAINT node_document_metadata_FK FOREIGN KEY (node_document_id) REFERENCES node_documents(id)
 )
@@ -1684,7 +1753,9 @@ module Records =
         SELECT
               node_document_metadata.`node_document_id`,
               node_document_metadata.`item_key`,
-              node_document_metadata.`item_value`
+              node_document_metadata.`item_value`,
+              node_document_metadata.`created_on`,
+              node_document_metadata.`active`
         FROM node_document_metadata
         """
     
@@ -1862,18 +1933,22 @@ module Records =
     type NodeMetadataItem =
         { [<JsonPropertyName("nodeId")>] NodeId: string
           [<JsonPropertyName("itemKey")>] ItemKey: string
-          [<JsonPropertyName("itemValue")>] ItemValue: string }
+          [<JsonPropertyName("itemValue")>] ItemValue: string
+          [<JsonPropertyName("createdOn")>] CreatedOn: DateTime
+          [<JsonPropertyName("active")>] Active: bool }
     
         static member Blank() =
             { NodeId = String.Empty
               ItemKey = String.Empty
-              ItemValue = String.Empty }
+              ItemValue = String.Empty
+              CreatedOn = DateTime.UtcNow
+              Active = true }
     
         static member CreateTableSql() = """
         CREATE TABLE node_metadata (
 	node_id TEXT NOT NULL,
 	item_key TEXT NOT NULL,
-	item_value TEXT NOT NULL,
+	item_value TEXT NOT NULL, created_on TEXT NOT NULL, active INTEGER NOT NULL,
 	CONSTRAINT node_metadata_PK PRIMARY KEY (node_id,item_key),
 	CONSTRAINT node_metadata_FK FOREIGN KEY (node_id) REFERENCES nodes(id)
 )
@@ -1883,7 +1958,9 @@ module Records =
         SELECT
               node_metadata.`node_id`,
               node_metadata.`item_key`,
-              node_metadata.`item_value`
+              node_metadata.`item_value`,
+              node_metadata.`created_on`,
+              node_metadata.`active`
         FROM node_metadata
         """
     
@@ -1980,18 +2057,22 @@ module Records =
     type NodeResourceMetadataItem =
         { [<JsonPropertyName("nodeResourceId")>] NodeResourceId: string
           [<JsonPropertyName("itemKey")>] ItemKey: string
-          [<JsonPropertyName("itemValue")>] ItemValue: string }
+          [<JsonPropertyName("itemValue")>] ItemValue: string
+          [<JsonPropertyName("createdOn")>] CreatedOn: DateTime
+          [<JsonPropertyName("active")>] Active: bool }
     
         static member Blank() =
             { NodeResourceId = String.Empty
               ItemKey = String.Empty
-              ItemValue = String.Empty }
+              ItemValue = String.Empty
+              CreatedOn = DateTime.UtcNow
+              Active = true }
     
         static member CreateTableSql() = """
         CREATE TABLE node_resource_metadata (
 	node_resource_id TEXT NOT NULL,
 	item_key TEXT NOT NULL,
-	item_value TEXT NOT NULL,
+	item_value TEXT NOT NULL, created_on TEXT NOT NULL, active INTEGER NOT NULL,
 	CONSTRAINT node_resource_metadata_PK PRIMARY KEY (node_resource_id,item_key),
 	CONSTRAINT node_resource_metadata_FK FOREIGN KEY (node_resource_id) REFERENCES node_resources(id)
 )
@@ -2001,7 +2082,9 @@ module Records =
         SELECT
               node_resource_metadata.`node_resource_id`,
               node_resource_metadata.`item_key`,
-              node_resource_metadata.`item_value`
+              node_resource_metadata.`item_value`,
+              node_resource_metadata.`created_on`,
+              node_resource_metadata.`active`
         FROM node_resource_metadata
         """
     
@@ -2645,7 +2728,7 @@ module Records =
         static member TableName() = "tags"
     
 
-/// Module generated on 30/07/2023 20:28:42 (utc) via Freql.Tools.
+/// Module generated on 31/07/2023 11:50:13 (utc) via Freql.Tools.
 [<RequireQualifiedAccess>]
 module Parameters =
     /// A record representing a new row in the table `compression_types`.
@@ -2660,12 +2743,16 @@ module Parameters =
     type NewConnectionDocumentMetadataItem =
         { [<JsonPropertyName("connectionDocumentId")>] ConnectionDocumentId: string
           [<JsonPropertyName("itemKey")>] ItemKey: string
-          [<JsonPropertyName("itemValue")>] ItemValue: string }
+          [<JsonPropertyName("itemValue")>] ItemValue: string
+          [<JsonPropertyName("createdOn")>] CreatedOn: DateTime
+          [<JsonPropertyName("active")>] Active: bool }
     
         static member Blank() =
             { ConnectionDocumentId = String.Empty
               ItemKey = String.Empty
-              ItemValue = String.Empty }
+              ItemValue = String.Empty
+              CreatedOn = DateTime.UtcNow
+              Active = true }
     
     
     /// A record representing a new row in the table `connection_document_note_versions`.
@@ -2740,12 +2827,16 @@ module Parameters =
     type NewConnectionMetadataItem =
         { [<JsonPropertyName("connectionId")>] ConnectionId: string
           [<JsonPropertyName("itemKey")>] ItemKey: string
-          [<JsonPropertyName("itemValue")>] ItemValue: string }
+          [<JsonPropertyName("itemValue")>] ItemValue: string
+          [<JsonPropertyName("createdOn")>] CreatedOn: DateTime
+          [<JsonPropertyName("active")>] Active: bool }
     
         static member Blank() =
             { ConnectionId = String.Empty
               ItemKey = String.Empty
-              ItemValue = String.Empty }
+              ItemValue = String.Empty
+              CreatedOn = DateTime.UtcNow
+              Active = true }
     
     
     /// A record representing a new row in the table `connection_note_versions`.
@@ -2788,12 +2879,16 @@ module Parameters =
     type NewConnectionResourceMetadataItem =
         { [<JsonPropertyName("connectionResourceId")>] ConnectionResourceId: string
           [<JsonPropertyName("itemKey")>] ItemKey: string
-          [<JsonPropertyName("itemValue")>] ItemValue: string }
+          [<JsonPropertyName("itemValue")>] ItemValue: string
+          [<JsonPropertyName("createdOn")>] CreatedOn: DateTime
+          [<JsonPropertyName("active")>] Active: bool }
     
         static member Blank() =
             { ConnectionResourceId = String.Empty
               ItemKey = String.Empty
-              ItemValue = String.Empty }
+              ItemValue = String.Empty
+              CreatedOn = DateTime.UtcNow
+              Active = true }
     
     
     /// A record representing a new row in the table `connection_resource_note_versions`.
@@ -3056,16 +3151,32 @@ module Parameters =
             { Name = String.Empty }
     
     
+    /// A record representing a new row in the table `events`.
+    type NewEvents =
+        { [<JsonPropertyName("eventType")>] EventType: string
+          [<JsonPropertyName("eventTimestamp")>] EventTimestamp: DateTime
+          [<JsonPropertyName("eventBlob")>] EventBlob: string }
+    
+        static member Blank() =
+            { EventType = String.Empty
+              EventTimestamp = DateTime.UtcNow
+              EventBlob = String.Empty }
+    
+    
     /// A record representing a new row in the table `external_connection_document_metadata`.
     type NewExternalConnectionDocumentMetadataItem =
         { [<JsonPropertyName("externalConnectionDocumentId")>] ExternalConnectionDocumentId: string
           [<JsonPropertyName("itemKey")>] ItemKey: string
-          [<JsonPropertyName("itemValue")>] ItemValue: string }
+          [<JsonPropertyName("itemValue")>] ItemValue: string
+          [<JsonPropertyName("createdOn")>] CreatedOn: DateTime
+          [<JsonPropertyName("active")>] Active: bool }
     
         static member Blank() =
             { ExternalConnectionDocumentId = String.Empty
               ItemKey = String.Empty
-              ItemValue = String.Empty }
+              ItemValue = String.Empty
+              CreatedOn = DateTime.UtcNow
+              Active = true }
     
     
     /// A record representing a new row in the table `external_connection_document_note_versions`.
@@ -3140,12 +3251,16 @@ module Parameters =
     type NewExternalConnectionMetadataItem =
         { [<JsonPropertyName("externalConnectionId")>] ExternalConnectionId: string
           [<JsonPropertyName("itemKey")>] ItemKey: string
-          [<JsonPropertyName("itemValue")>] ItemValue: string }
+          [<JsonPropertyName("itemValue")>] ItemValue: string
+          [<JsonPropertyName("createdOn")>] CreatedOn: DateTime
+          [<JsonPropertyName("active")>] Active: bool }
     
         static member Blank() =
             { ExternalConnectionId = String.Empty
               ItemKey = String.Empty
-              ItemValue = String.Empty }
+              ItemValue = String.Empty
+              CreatedOn = DateTime.UtcNow
+              Active = true }
     
     
     /// A record representing a new row in the table `external_connection_note_versions`.
@@ -3188,12 +3303,16 @@ module Parameters =
     type NewExternalConnectionResourceMetadataItem =
         { [<JsonPropertyName("externalConnectionResourceId")>] ExternalConnectionResourceId: string
           [<JsonPropertyName("itemKey")>] ItemKey: string
-          [<JsonPropertyName("itemValue")>] ItemValue: string }
+          [<JsonPropertyName("itemValue")>] ItemValue: string
+          [<JsonPropertyName("createdOn")>] CreatedOn: DateTime
+          [<JsonPropertyName("active")>] Active: bool }
     
         static member Blank() =
             { ExternalConnectionResourceId = String.Empty
               ItemKey = String.Empty
-              ItemValue = String.Empty }
+              ItemValue = String.Empty
+              CreatedOn = DateTime.UtcNow
+              Active = true }
     
     
     /// A record representing a new row in the table `external_connection_resource_note_versions`.
@@ -3320,12 +3439,16 @@ module Parameters =
     type NewNodeDocumentMetadataItem =
         { [<JsonPropertyName("nodeDocumentId")>] NodeDocumentId: string
           [<JsonPropertyName("itemKey")>] ItemKey: string
-          [<JsonPropertyName("itemValue")>] ItemValue: string }
+          [<JsonPropertyName("itemValue")>] ItemValue: string
+          [<JsonPropertyName("createdOn")>] CreatedOn: DateTime
+          [<JsonPropertyName("active")>] Active: bool }
     
         static member Blank() =
             { NodeDocumentId = String.Empty
               ItemKey = String.Empty
-              ItemValue = String.Empty }
+              ItemValue = String.Empty
+              CreatedOn = DateTime.UtcNow
+              Active = true }
     
     
     /// A record representing a new row in the table `node_document_note_versions`.
@@ -3400,12 +3523,16 @@ module Parameters =
     type NewNodeMetadataItem =
         { [<JsonPropertyName("nodeId")>] NodeId: string
           [<JsonPropertyName("itemKey")>] ItemKey: string
-          [<JsonPropertyName("itemValue")>] ItemValue: string }
+          [<JsonPropertyName("itemValue")>] ItemValue: string
+          [<JsonPropertyName("createdOn")>] CreatedOn: DateTime
+          [<JsonPropertyName("active")>] Active: bool }
     
         static member Blank() =
             { NodeId = String.Empty
               ItemKey = String.Empty
-              ItemValue = String.Empty }
+              ItemValue = String.Empty
+              CreatedOn = DateTime.UtcNow
+              Active = true }
     
     
     /// A record representing a new row in the table `node_note_versions`.
@@ -3448,12 +3575,16 @@ module Parameters =
     type NewNodeResourceMetadataItem =
         { [<JsonPropertyName("nodeResourceId")>] NodeResourceId: string
           [<JsonPropertyName("itemKey")>] ItemKey: string
-          [<JsonPropertyName("itemValue")>] ItemValue: string }
+          [<JsonPropertyName("itemValue")>] ItemValue: string
+          [<JsonPropertyName("createdOn")>] CreatedOn: DateTime
+          [<JsonPropertyName("active")>] Active: bool }
     
         static member Blank() =
             { NodeResourceId = String.Empty
               ItemKey = String.Empty
-              ItemValue = String.Empty }
+              ItemValue = String.Empty
+              CreatedOn = DateTime.UtcNow
+              Active = true }
     
     
     /// A record representing a new row in the table `node_resource_note_versions`.
@@ -3716,7 +3847,7 @@ module Parameters =
               Active = true }
     
     
-/// Module generated on 30/07/2023 20:28:42 (utc) via Freql.Tools.
+/// Module generated on 31/07/2023 11:50:13 (utc) via Freql.Tools.
 [<RequireQualifiedAccess>]
 module Operations =
 
@@ -4345,6 +4476,30 @@ module Operations =
     
     let insertEncryptionType (context: SqliteContext) (parameters: Parameters.NewEncryptionType) =
         context.Insert("encryption_types", parameters)
+    
+    /// Select a `Records.Events` from the table `events`.
+    /// Internally this calls `context.SelectSingleAnon<Records.Events>` and uses Records.Events.SelectSql().
+    /// The caller can provide extra string lines to create a query and boxed parameters.
+    /// It is up to the caller to verify the sql and parameters are correct,
+    /// this should be considered an internal function (not exposed in public APIs).
+    /// Parameters are assigned names based on their order in 0 indexed array. For example: @0,@1,@2...
+    /// Example: selectEventsRecord ctx "WHERE `field` = @0" [ box `value` ]
+    let selectEventsRecord (context: SqliteContext) (query: string list) (parameters: obj list) =
+        let sql = [ Records.Events.SelectSql() ] @ query |> buildSql
+        context.SelectSingleAnon<Records.Events>(sql, parameters)
+    
+    /// Internally this calls `context.SelectAnon<Records.Events>` and uses Records.Events.SelectSql().
+    /// The caller can provide extra string lines to create a query and boxed parameters.
+    /// It is up to the caller to verify the sql and parameters are correct,
+    /// this should be considered an internal function (not exposed in public APIs).
+    /// Parameters are assigned names based on their order in 0 indexed array. For example: @0,@1,@2...
+    /// Example: selectEventsRecords ctx "WHERE `field` = @0" [ box `value` ]
+    let selectEventsRecords (context: SqliteContext) (query: string list) (parameters: obj list) =
+        let sql = [ Records.Events.SelectSql() ] @ query |> buildSql
+        context.SelectAnon<Records.Events>(sql, parameters)
+    
+    let insertEvents (context: SqliteContext) (parameters: Parameters.NewEvents) =
+        context.Insert("events", parameters)
     
     /// Select a `Records.ExternalConnectionDocumentMetadataItem` from the table `external_connection_document_metadata`.
     /// Internally this calls `context.SelectSingleAnon<Records.ExternalConnectionDocumentMetadataItem>` and uses Records.ExternalConnectionDocumentMetadataItem.SelectSql().
