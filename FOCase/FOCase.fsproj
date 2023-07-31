@@ -7,8 +7,14 @@
 
     <ItemGroup>
         <Compile Include="Library.fs" />
-        <Folder Include="Core\" />
-        <Compile Include="Store\Persistence.fs" />
+        <Compile Include="Core\Common.fs" />
+        <Compile Include="Core\Encryption.fs" />
+        <Compile Include="Core\Compression.fs" />
+        <Compile Include="Core\FileTypes.fs" />
+        <Compile Include="Store\V1\Persistence.fs" />
+        <Compile Include="Store\V1\Common.fs" />
+        <Compile Include="Store\V1\Nodes.fs" />
+        <Compile Include="Store\V1\Connections.fs" />
     </ItemGroup>
 
     <ItemGroup>

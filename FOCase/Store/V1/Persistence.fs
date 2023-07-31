@@ -1,4 +1,4 @@
-namespace FOCase.Store.Persistence
+namespace FOCase.Store.V1.Persistence
 
 open System
 open System.Text.Json.Serialization
