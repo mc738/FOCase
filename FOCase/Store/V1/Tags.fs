@@ -13,8 +13,8 @@ module Tags =
         ({ Name = name
            CreatedOn = getTimestamp ()
            Active = true }
-        : Parameters.NewLabel)
-        |> Operations.insertLabel ctx
+        : Parameters.NewTag)
+        |> Operations.insertTag ctx
 
     let tryAdd (ctx: SqliteContext) (name: string) =
         match get ctx name with
@@ -22,7 +22,7 @@ module Tags =
         | None -> add ctx name |> Ok
 
     let activate (ctx: SqliteContext) (name: string) (includeRelated: bool) =
-        ctx.ExecuteVerbatimNonQueryAnon("UPDATE labels SET active = TRUE WHERE name = @0", [ name ])
+        ctx.ExecuteVerbatimNonQueryAnon("UPDATE tags SET active = TRUE WHERE name = @0", [ name ])
         |> ignore
 
         match includeRelated with
@@ -60,7 +60,7 @@ module Tags =
     /// <param name="name">The tag name.</param>
     /// <param name="includeRelated">Deactivate any usages of the tag in the store (for example connection tags, node tags etc.)</param>
     let deactivate (ctx: SqliteContext) (name: string) (includeRelated: bool) =
-        ctx.ExecuteVerbatimNonQueryAnon("UPDATE labels SET active = FALSE WHERE name = @0", [ name ])
+        ctx.ExecuteVerbatimNonQueryAnon("UPDATE tags SET active = FALSE WHERE name = @0", [ name ])
         |> ignore
         
         match includeRelated with
