@@ -3,6 +3,7 @@
 [<AutoOpen>]
 module Common =
 
+    open System
     open Freql.Sqlite
     open FOCase.Core
     open FOCase.Core.Compression
@@ -123,5 +124,8 @@ module Common =
 
         let initialize (ctx: SqliteContext) =
             ctx.ExecuteInTransaction(createTables >> seedData)
+            
+     
+    let getTimestamp _ = DateTime.UtcNow       
             
     let getId (id: IdType option) = (id |> Option.defaultWith (fun _ -> IdType.Create())).GetId()

@@ -24,6 +24,3 @@ module Common =
             match idt with
             | Specific id -> Specific id
             | Generated -> idt.GetId() |> Specific
-
-
-    let getTimestamp _ = DateTime.UtcNow
