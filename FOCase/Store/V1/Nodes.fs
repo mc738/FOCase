@@ -1,5 +1,7 @@
 ﻿namespace FOCase.Store.V1
 
+open System.Reflection.Emit
+
 [<RequireQualifiedAccess>]
 module Nodes =
 
@@ -35,6 +37,9 @@ module Nodes =
         | Some _ -> Error $"Metadata value `{key}` already exists for node `{nodeId}`"
         | None -> addMetadataValue ctx nodeId key value |> Ok
 
+    let getNodeLabel (ctx: SqliteContext) (nodeId: string) (label: string) =
+        Operations.selectNodeLabelRecord ctx [ "WHERE node_id = @0 AND label = @1" ] [ nodeId; label ]
+
     let addNodeLabel (ctx: SqliteContext) (nodeId: string) (label: string) (weight: decimal) =
         ({ NodeId = nodeId
            Label = label
@@ -43,3 +48,28 @@ module Nodes =
            Active = true }
         : Parameters.NewNodeLabel)
         |> Operations.insertNodeLabel ctx
+
+    let tryAddNodeLabel (ctx: SqliteContext) (nodeId: string) (label: string) (weight: decimal) =
+        match Labels.get ctx label, get ctx nodeId, getNodeLabel ctx nodeId label with
+        | None, _, _ -> Error $"Label `{label}` not found"
+        | _, None, _ -> Error $"Node `{nodeId}` not found"
+        | _, _, Some _ -> Error $"Label `{label}` already attached to node `{nodeId}`"
+        | Some l, Some n, None -> addNodeLabel ctx n.Id l.Name weight |> Ok
+
+    let getNodeTag (ctx: SqliteContext) (nodeId: string) (label: string) =
+        Operations.selectNodeTagRecord ctx [ "WHERE node_id = @0 AND tag = @1" ] [ nodeId; label ]
+
+    let addNodeTag (ctx: SqliteContext) (nodeId: string) (tag: string) =
+        ({ NodeId = nodeId
+           Tag = tag
+           CreatedOn = getTimestamp ()
+           Active = true }
+        : Parameters.NewNodeTag)
+        |> Operations.insertNodeTag ctx
+
+    let tryAddNodeTag (ctx: SqliteContext) (nodeId: string) (tag: string) =
+        match Tags.get ctx tag, get ctx nodeId, getNodeTag ctx nodeId tag with
+        | None, _, _ -> Error $"Tag `{tag}` not found"
+        | _, None, _ -> Error $"Node `{nodeId}` not found"
+        | _, _, Some _ -> Error $"Tag `{tag}` already attached to node `{nodeId}`"
+        | Some l, Some n, None -> addNodeTag ctx n.Id l.Name |> Ok
