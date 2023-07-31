@@ -30,4 +30,16 @@ module Nodes =
         : Parameters.NewNodeMetadataItem)
         |> Operations.insertNodeMetadataItem ctx
 
-    let 
+    let tryAddMetadataValue (ctx: SqliteContext) (nodeId: string) (key: string) (value: string) =
+        match getMetadataValue ctx nodeId key with
+        | Some _ -> Error $"Metadata value `{key}` already exists for node `{nodeId}`"
+        | None -> addMetadataValue ctx nodeId key value |> Ok
+
+    let addNodeLabel (ctx: SqliteContext) (nodeId: string) (label: string) (weight: decimal) =
+        ({ NodeId = nodeId
+           Label = label
+           Weight = weight
+           CreatedOn = getTimestamp ()
+           Active = true }
+        : Parameters.NewNodeLabel)
+        |> Operations.insertNodeLabel ctx

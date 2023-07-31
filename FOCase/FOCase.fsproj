@@ -13,6 +13,8 @@
         <Compile Include="Core\FileTypes.fs" />
         <Compile Include="Store\V1\Persistence.fs" />
         <Compile Include="Store\V1\Common.fs" />
+        <Compile Include="Store\V1\Labels.fs" />
+        <Compile Include="Store\V1\Tags.fs" />
         <Compile Include="Store\V1\Nodes.fs" />
         <Compile Include="Store\V1\Connections.fs" />
     </ItemGroup>

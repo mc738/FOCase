@@ -5,7 +5,7 @@ open System.Text.Json.Serialization
 open Freql.Core.Common
 open Freql.Sqlite
 
-/// Module generated on 31/07/2023 11:50:13 (utc) via Freql.Tools.
+/// Module generated on 31/07/2023 11:51:51 (utc) via Freql.Tools.
 [<RequireQualifiedAccess>]
 module Records =
     /// A record representing a row in the table `compression_types`.
@@ -1035,7 +1035,7 @@ module Records =
         static member TableName() = "encryption_types"
     
     /// A record representing a row in the table `events`.
-    type Events =
+    type EventItem =
         { [<JsonPropertyName("eventType")>] EventType: string
           [<JsonPropertyName("eventTimestamp")>] EventTimestamp: DateTime
           [<JsonPropertyName("eventBlob")>] EventBlob: string }
@@ -2728,7 +2728,7 @@ module Records =
         static member TableName() = "tags"
     
 
-/// Module generated on 31/07/2023 11:50:13 (utc) via Freql.Tools.
+/// Module generated on 31/07/2023 11:51:51 (utc) via Freql.Tools.
 [<RequireQualifiedAccess>]
 module Parameters =
     /// A record representing a new row in the table `compression_types`.
@@ -3152,7 +3152,7 @@ module Parameters =
     
     
     /// A record representing a new row in the table `events`.
-    type NewEvents =
+    type NewEventItem =
         { [<JsonPropertyName("eventType")>] EventType: string
           [<JsonPropertyName("eventTimestamp")>] EventTimestamp: DateTime
           [<JsonPropertyName("eventBlob")>] EventBlob: string }
@@ -3847,7 +3847,7 @@ module Parameters =
               Active = true }
     
     
-/// Module generated on 31/07/2023 11:50:13 (utc) via Freql.Tools.
+/// Module generated on 31/07/2023 11:51:51 (utc) via Freql.Tools.
 [<RequireQualifiedAccess>]
 module Operations =
 
@@ -4477,28 +4477,28 @@ module Operations =
     let insertEncryptionType (context: SqliteContext) (parameters: Parameters.NewEncryptionType) =
         context.Insert("encryption_types", parameters)
     
-    /// Select a `Records.Events` from the table `events`.
-    /// Internally this calls `context.SelectSingleAnon<Records.Events>` and uses Records.Events.SelectSql().
+    /// Select a `Records.EventItem` from the table `events`.
+    /// Internally this calls `context.SelectSingleAnon<Records.EventItem>` and uses Records.EventItem.SelectSql().
     /// The caller can provide extra string lines to create a query and boxed parameters.
     /// It is up to the caller to verify the sql and parameters are correct,
     /// this should be considered an internal function (not exposed in public APIs).
     /// Parameters are assigned names based on their order in 0 indexed array. For example: @0,@1,@2...
-    /// Example: selectEventsRecord ctx "WHERE `field` = @0" [ box `value` ]
-    let selectEventsRecord (context: SqliteContext) (query: string list) (parameters: obj list) =
-        let sql = [ Records.Events.SelectSql() ] @ query |> buildSql
-        context.SelectSingleAnon<Records.Events>(sql, parameters)
+    /// Example: selectEventItemRecord ctx "WHERE `field` = @0" [ box `value` ]
+    let selectEventItemRecord (context: SqliteContext) (query: string list) (parameters: obj list) =
+        let sql = [ Records.EventItem.SelectSql() ] @ query |> buildSql
+        context.SelectSingleAnon<Records.EventItem>(sql, parameters)
     
-    /// Internally this calls `context.SelectAnon<Records.Events>` and uses Records.Events.SelectSql().
+    /// Internally this calls `context.SelectAnon<Records.EventItem>` and uses Records.EventItem.SelectSql().
     /// The caller can provide extra string lines to create a query and boxed parameters.
     /// It is up to the caller to verify the sql and parameters are correct,
     /// this should be considered an internal function (not exposed in public APIs).
     /// Parameters are assigned names based on their order in 0 indexed array. For example: @0,@1,@2...
-    /// Example: selectEventsRecords ctx "WHERE `field` = @0" [ box `value` ]
-    let selectEventsRecords (context: SqliteContext) (query: string list) (parameters: obj list) =
-        let sql = [ Records.Events.SelectSql() ] @ query |> buildSql
-        context.SelectAnon<Records.Events>(sql, parameters)
+    /// Example: selectEventItemRecords ctx "WHERE `field` = @0" [ box `value` ]
+    let selectEventItemRecords (context: SqliteContext) (query: string list) (parameters: obj list) =
+        let sql = [ Records.EventItem.SelectSql() ] @ query |> buildSql
+        context.SelectAnon<Records.EventItem>(sql, parameters)
     
-    let insertEvents (context: SqliteContext) (parameters: Parameters.NewEvents) =
+    let insertEventItem (context: SqliteContext) (parameters: Parameters.NewEventItem) =
         context.Insert("events", parameters)
     
     /// Select a `Records.ExternalConnectionDocumentMetadataItem` from the table `external_connection_document_metadata`.
