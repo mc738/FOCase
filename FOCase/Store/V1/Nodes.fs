@@ -119,9 +119,16 @@ module Nodes =
 
     // *** Tags ***
 
-    let getNodeTag (ctx: SqliteContext) (nodeId: string) (label: string) =
-        Operations.selectNodeTagRecord ctx [ "WHERE node_id = @0 AND tag = @1" ] [ nodeId; label ]
+    let getNodeTag (ctx: SqliteContext) (nodeId: string) (tag: string) =
+        Operations.selectNodeTagRecord ctx [ "WHERE node_id = @0 AND tag = @1" ] [ nodeId; tag ]
 
+    let getAllNodeTags (ctx: SqliteContext) (nodeId: string) =
+        Operations.selectNodeTagRecords ctx [ "WHERE node_id = @0" ] [ nodeId ]
+        
+    
+    let getAllNodeTags (ctx: SqliteContext) (nodeId: string) =
+        Operations.selectNodeTagRecords ctx [ "WHERE node_id = @0" ] [ nodeId ]
+    
     let addNodeTag (ctx: SqliteContext) (nodeId: string) (tag: string) =
         ({ NodeId = nodeId
            Tag = tag
@@ -151,6 +158,19 @@ module Nodes =
 
     // *** Notes ***
 
+    let getNote (ctx: SqliteContext) (noteId: string) =
+        Operations.selectNodeNoteRecord ctx [ "WHERE note_id = @0" ] [ noteId ]
+    
+    let getAllActiveNotes (ctx: SqliteContext) (nodeId: string) =
+        Operations.selectNodeNoteRecord ctx [ "WHERE node_id = @0 AND active = TRUE;" ] [ nodeId ]
+        
+    let getAllNotes (ctx: SqliteContext) (nodeId: string) =
+        Operations.selectNodeNoteRecord ctx [ "WHERE node_id = @0" ] [ nodeId ]
+        
+    let getLatestNoteVersion (ctx: SqliteContext) (noteId: string) =
+        Operations.selectNodeNoteVersionRecord ctx [ "WHERE node_note_id = @0 ORDER BY version DESC LIMIT 1" ] [ noteId ]
+    
     let addNote (ctx: SqliteContext) (id: IdType option) (nodeId: string) (note: string) =
+        ({})
 
         ()
