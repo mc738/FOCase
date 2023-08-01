@@ -1,12 +1,16 @@
 ﻿namespace FOCase.Store.V1
 
+open System.IO
 open System.Reflection.Emit
 open FOCase.Core
+open Freql.Core.Common.Types
 open Microsoft.FSharp.Core
 
 [<RequireQualifiedAccess>]
 module Nodes =
 
+    open FsToolbox.Extensions.Strings
+    open FsToolbox.Extensions.Streams
     open Freql.Sqlite
     open FOCase.Core
     open FOCase.Store.V1.Persistence
@@ -85,10 +89,10 @@ module Nodes =
 
     let getAllNodeLabels (ctx: SqliteContext) (nodeId: string) =
         Operations.selectNodeLabelRecords ctx [ "WHERE node_id = @0" ] [ nodeId ]
-    
+
     let getAllActiveNodeLabels (ctx: SqliteContext) (nodeId: string) =
         Operations.selectNodeLabelRecords ctx [ "WHERE node_id = @0 AND active = TRUE" ] [ nodeId ]
-        
+
     let addNodeLabel (ctx: SqliteContext) (nodeId: string) (label: string) (weight: decimal) =
         ({ NodeId = nodeId
            Label = label
@@ -130,13 +134,13 @@ module Nodes =
 
     let getAllNodeTags (ctx: SqliteContext) (nodeId: string) =
         Operations.selectNodeTagRecords ctx [ "WHERE node_id = @0" ] [ nodeId ]
-    
+
     let getAllActiveNodeTags (ctx: SqliteContext) (nodeId: string) =
         Operations.selectNodeTagRecords ctx [ "WHERE node_id = @0 AND active = TRUE" ] [ nodeId ]
-        
+
     let getAllNodeTags (ctx: SqliteContext) (nodeId: string) =
         Operations.selectNodeTagRecords ctx [ "WHERE node_id = @0" ] [ nodeId ]
-    
+
     let addNodeTag (ctx: SqliteContext) (nodeId: string) (tag: string) =
         ({ NodeId = nodeId
            Tag = tag
@@ -168,17 +172,39 @@ module Nodes =
 
     let getNote (ctx: SqliteContext) (noteId: string) =
         Operations.selectNodeNoteRecord ctx [ "WHERE note_id = @0" ] [ noteId ]
-    
+
     let getAllActiveNotes (ctx: SqliteContext) (nodeId: string) =
         Operations.selectNodeNoteRecord ctx [ "WHERE node_id = @0 AND active = TRUE;" ] [ nodeId ]
-        
+
     let getAllNotes (ctx: SqliteContext) (nodeId: string) =
         Operations.selectNodeNoteRecord ctx [ "WHERE node_id = @0" ] [ nodeId ]
-        
-    let getLatestNoteVersion (ctx: SqliteContext) (noteId: string) =
-        Operations.selectNodeNoteVersionRecord ctx [ "WHERE node_note_id = @0 ORDER BY version DESC LIMIT 1" ] [ noteId ]
-    
-    let addNote (ctx: SqliteContext) (id: IdType option) (nodeId: string) (note: string) =
-        ({})
 
-        ()
+    let getLatestNoteVersion (ctx: SqliteContext) (noteId: string) =
+        Operations.selectNodeNoteVersionRecord
+            ctx
+            [ "WHERE node_note_id = @0 ORDER BY version DESC LIMIT 1" ]
+            [ noteId ]
+
+    let addNote (ctx: SqliteContext) (id: IdType option) (nodeId: string) (note: string) =
+        ({ Id = getId id
+           NodeId = nodeId
+           CreatedOn = getTimestamp ()
+           Active = true }
+        : Parameters.NewNodeNote)
+        |> Operations.insertNodeNote ctx
+        
+    let addNoteVersion (ctx: SqliteContext) (id: IdType option) (noteId: string) (version: int) (title: string) (note: string) =
+        use ms = new MemoryStream(note.ToUtf8Bytes())
+        let hash = ms.GetSHA256Hash()
+        
+        ({
+        Id = getId id
+        NodeNoteId = noteId
+        Version = version
+        Title = title
+        Note = BlobField.FromStream ms
+        Hash = hash
+        CreatedOn = getTimestamp () 
+        Active = true
+    } : Parameters.NewNodeNoteVersion)
+        
