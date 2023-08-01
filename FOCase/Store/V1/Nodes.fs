@@ -20,6 +20,12 @@ module Nodes =
     let get (ctx: SqliteContext) (id: string) =
         Operations.selectNodeRecord ctx [ "WHERE id = @0" ] [ id ]
 
+    let activate (ctx: SqliteContext) (id: string) =
+        ctx.ExecuteVerbatimNonQueryAnon("UPDATE nodes SET active = TRUE WHERE id = @0", [ id ])
+   
+    let deactivate (ctx: SqliteContext) (id: string) =
+        ctx.ExecuteVerbatimNonQueryAnon("UPDATE nodes SET active = FALSE WHERE id = @0", [ id ])
+    
     let getMetadataValue (ctx: SqliteContext) (nodeId: string) (key: string) =
         Operations.selectNodeMetadataItemRecord ctx [ "WHERE node_id = @0 AND item_key = @1" ] [ nodeId; key ]
 
@@ -36,6 +42,35 @@ module Nodes =
         match getMetadataValue ctx nodeId key with
         | Some _ -> Error $"Metadata value `{key}` already exists for node `{nodeId}`"
         | None -> addMetadataValue ctx nodeId key value |> Ok
+
+    let updateMetadataValue (ctx: SqliteContext) (nodeId: string) (key: string) (value: string) =
+        ctx.ExecuteVerbatimNonQueryAnon(
+            "UPDATE node_metadata SET item_value = @0 WHERE node_id = @1 AND item_key = @2",
+            [ value; nodeId; key ]
+        )
+        |> ignore
+
+    let tryUpdateMetadataValue (ctx: SqliteContext) (nodeId: string) (key: string) (value: string) =
+        match getMetadataValue ctx nodeId key with
+        | Some _ -> updateMetadataValue ctx nodeId key value |> Ok
+        | None -> Error $"Metadata value `{key}` does not exist for node `{nodeId}`"
+
+    let addOrUpdateMetadataValue (ctx: SqliteContext) (nodeId: string) (key: string) (value: string) =
+        match getMetadataValue ctx nodeId key with
+        | Some _ -> updateMetadataValue ctx nodeId key value
+        | None -> addMetadataValue ctx nodeId key value
+
+    let activateMetadataItem (ctx: SqliteContext) (nodeId: string) (key: string) =
+        ctx.ExecuteVerbatimNonQueryAnon(
+            "UPDATE node_metadata SET active = TRUE WHERE node_id = @0 AND item_key = @1",
+            [ nodeId; key ]
+        )
+        
+    let deactivateMetadataItem (ctx: SqliteContext) (nodeId: string) (key: string) =
+        ctx.ExecuteVerbatimNonQueryAnon(
+            "UPDATE node_metadata SET active = FALSE WHERE node_id = @0 AND item_key = @1",
+            [ nodeId; key ]
+        )
 
     let getNodeLabel (ctx: SqliteContext) (nodeId: string) (label: string) =
         Operations.selectNodeLabelRecord ctx [ "WHERE node_id = @0 AND label = @1" ] [ nodeId; label ]
