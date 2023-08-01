@@ -1,6 +1,8 @@
 ﻿namespace FOCase.Store.V1
 
 open System.Reflection.Emit
+open FOCase.Core
+open Microsoft.FSharp.Core
 
 [<RequireQualifiedAccess>]
 module Nodes =
@@ -8,6 +10,8 @@ module Nodes =
     open Freql.Sqlite
     open FOCase.Core
     open FOCase.Store.V1.Persistence
+
+    // *** General ***
 
     let add (ctx: SqliteContext) (id: IdType option) (name: string) =
         ({ Id = getId id
@@ -22,10 +26,12 @@ module Nodes =
 
     let activate (ctx: SqliteContext) (id: string) =
         ctx.ExecuteVerbatimNonQueryAnon("UPDATE nodes SET active = TRUE WHERE id = @0", [ id ])
-   
+
     let deactivate (ctx: SqliteContext) (id: string) =
         ctx.ExecuteVerbatimNonQueryAnon("UPDATE nodes SET active = FALSE WHERE id = @0", [ id ])
-    
+
+    // *** Metadata ***
+
     let getMetadataValue (ctx: SqliteContext) (nodeId: string) (key: string) =
         Operations.selectNodeMetadataItemRecord ctx [ "WHERE node_id = @0 AND item_key = @1" ] [ nodeId; key ]
 
@@ -65,12 +71,14 @@ module Nodes =
             "UPDATE node_metadata SET active = TRUE WHERE node_id = @0 AND item_key = @1",
             [ nodeId; key ]
         )
-        
+
     let deactivateMetadataItem (ctx: SqliteContext) (nodeId: string) (key: string) =
         ctx.ExecuteVerbatimNonQueryAnon(
             "UPDATE node_metadata SET active = FALSE WHERE node_id = @0 AND item_key = @1",
             [ nodeId; key ]
         )
+
+    // *** Labels
 
     let getNodeLabel (ctx: SqliteContext) (nodeId: string) (label: string) =
         Operations.selectNodeLabelRecord ctx [ "WHERE node_id = @0 AND label = @1" ] [ nodeId; label ]
@@ -91,6 +99,26 @@ module Nodes =
         | _, _, Some _ -> Error $"Label `{label}` already attached to node `{nodeId}`"
         | Some l, Some n, None -> addNodeLabel ctx n.Id l.Name weight |> Ok
 
+    let activateNodeLabel (ctx: SqliteContext) (nodeId: string) (label: string) =
+        ctx.ExecuteVerbatimNonQueryAnon(
+            "UPDATE node_labels SET active = TRUE WHERE node_id = @0 AND label = @1",
+            [ nodeId; label ]
+        )
+
+    let deactivateNodeLabel (ctx: SqliteContext) (nodeId: string) (label: string) =
+        ctx.ExecuteVerbatimNonQueryAnon(
+            "UPDATE node_labels SET active = FALSE WHERE node_id = @0 AND label = @1",
+            [ nodeId; label ]
+        )
+
+    let updateNodeLabelWeight (ctx: SqliteContext) (nodeId: string) (label: string) (weight: decimal) =
+        ctx.ExecuteVerbatimNonQueryAnon(
+            "UPDATE node_labels SET weight = @0 WHERE node_id = @1 AND label = @2",
+            [ weight; nodeId; label ]
+        )
+
+    // *** Tags ***
+
     let getNodeTag (ctx: SqliteContext) (nodeId: string) (label: string) =
         Operations.selectNodeTagRecord ctx [ "WHERE node_id = @0 AND tag = @1" ] [ nodeId; label ]
 
@@ -108,3 +136,21 @@ module Nodes =
         | _, None, _ -> Error $"Node `{nodeId}` not found"
         | _, _, Some _ -> Error $"Tag `{tag}` already attached to node `{nodeId}`"
         | Some l, Some n, None -> addNodeTag ctx n.Id l.Name |> Ok
+
+    let activateNodeTag (ctx: SqliteContext) (nodeId: string) (tag: string) =
+        ctx.ExecuteVerbatimNonQueryAnon(
+            "UPDATE node_tags SET active = TRUE WHERE node_id = @0 AND tag = @1",
+            [ nodeId; tag ]
+        )
+
+    let deactivateNodeTag (ctx: SqliteContext) (nodeId: string) (tag: string) =
+        ctx.ExecuteVerbatimNonQueryAnon(
+            "UPDATE node_tags SET active = FALSE WHERE node_id = @0 AND tag = @1",
+            [ nodeId; tag ]
+        )
+
+    // *** Notes ***
+
+    let addNote (ctx: SqliteContext) (id: IdType option) (nodeId: string) (note: string) =
+
+        ()
