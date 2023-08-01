@@ -8,13 +8,32 @@ module Documents =
     open FOCase.Core
     open FOCase.Store.V1.Persistence
 
+    // *** General ***
+
     let add (ctx: SqliteContext) (id: IdType option) (name: string) =
-        ({ Id = getId id; Name = name }: Parameters.NewDocument)
+        ({ Id = getId id
+           Name = name
+           CreatedOn = getTimestamp ()
+           Active = true }
+        : Parameters.NewDocument)
         |> Operations.insertDocument ctx
 
     let get (ctx: SqliteContext) (id: string) =
         Operations.selectDocumentRecord ctx [ "WHERE id = @0" ] [ id ]
+        
+    let getAll (ctx:SqliteContext) =
+        Operations.selectDocumentRecord ctx [] []
+        
+    let getAllActive (ctx: SqliteContext) =
+        Operations.selectDocumentRecord ctx [ "WHERE active = TRUE" ] []
+    
+    let activate (ctx: SqliteContext) (id: string) =
+        ctx.ExecuteVerbatimNonQueryAnon("UPDATE documents SET active = TRUE WHERE id = @0", [ id ])
 
+    let deactivate (ctx: SqliteContext) (id: string) =
+        ctx.ExecuteVerbatimNonQueryAnon("UPDATE documents SET active = FALSE WHERE id = @0", [ id ])
+
+    // *** Meta data ***
 
     let getMetadataValue (ctx: SqliteContext) (documentId: string) (key: string) =
         Operations.selectDocumentMetadataItemRecord
