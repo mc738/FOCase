@@ -124,8 +124,10 @@ module Nodes =
 
     let getAllNodeTags (ctx: SqliteContext) (nodeId: string) =
         Operations.selectNodeTagRecords ctx [ "WHERE node_id = @0" ] [ nodeId ]
-        
     
+    let getAllActiveNodeTags (ctx: SqliteContext) (nodeId: string) =
+        Operations.selectNodeTagRecords ctx [ "WHERE node_id = @0 AND active = TRUE" ] [ nodeId ]
+        
     let getAllNodeTags (ctx: SqliteContext) (nodeId: string) =
         Operations.selectNodeTagRecords ctx [ "WHERE node_id = @0" ] [ nodeId ]
     
