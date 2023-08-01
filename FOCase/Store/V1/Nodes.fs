@@ -27,7 +27,13 @@ module Nodes =
 
     let get (ctx: SqliteContext) (id: string) =
         Operations.selectNodeRecord ctx [ "WHERE id = @0" ] [ id ]
-
+        
+    let getAll (ctx:SqliteContext) =
+        Operations.selectNodeRecords ctx [] []
+        
+    let getAllActive (ctx: SqliteContext) =
+        Operations.selectNodeRecords ctx [ "WHERE active = TRUE" ] []
+    
     let activate (ctx: SqliteContext) (id: string) =
         ctx.ExecuteVerbatimNonQueryAnon("UPDATE nodes SET active = TRUE WHERE id = @0", [ id ])
 
@@ -138,9 +144,6 @@ module Nodes =
     let getAllActiveNodeTags (ctx: SqliteContext) (nodeId: string) =
         Operations.selectNodeTagRecords ctx [ "WHERE node_id = @0 AND active = TRUE" ] [ nodeId ]
 
-    let getAllNodeTags (ctx: SqliteContext) (nodeId: string) =
-        Operations.selectNodeTagRecords ctx [ "WHERE node_id = @0" ] [ nodeId ]
-
     let addNodeTag (ctx: SqliteContext) (nodeId: string) (tag: string) =
         ({ NodeId = nodeId
            Tag = tag
@@ -185,26 +188,72 @@ module Nodes =
             [ "WHERE node_note_id = @0 ORDER BY version DESC LIMIT 1" ]
             [ noteId ]
 
-    let addNote (ctx: SqliteContext) (id: IdType option) (nodeId: string) (note: string) =
+    let getLatestActiveNoteVersion (ctx: SqliteContext) (noteId: string) =
+        Operations.selectNodeNoteVersionRecord
+            ctx
+            [ "WHERE node_note_id = @0 AND active = TRUE ORDER BY version DESC LIMIT 1" ]
+            [ noteId ]
+
+    let activateNote (ctx: SqliteContext) (noteId: string) =
+        ctx.ExecuteVerbatimNonQueryAnon("UPDATE node_notes SET active = TRUE WHERE id = @0", [ noteId ])
+
+    let deactivateNote (ctx: SqliteContext) (noteId: string) =
+        ctx.ExecuteVerbatimNonQueryAnon("UPDATE node_notes SET active = FALSE WHERE id = @0", [ noteId ])
+
+    let activateNoteVersion (ctx: SqliteContext) (noteVersionId: string) =
+        ctx.ExecuteVerbatimNonQueryAnon("UPDATE node_note_versions SET active = TRUE WHERE id = @0", [ noteVersionId ])
+
+    let deactivateNoteVersion (ctx: SqliteContext) (noteVersionId: string) =
+        ctx.ExecuteVerbatimNonQueryAnon("UPDATE node_note_versions SET active = FALSE WHERE id = @0", [ noteVersionId ])
+
+
+    let addNote (ctx: SqliteContext) (id: IdType option) (nodeId: string) =
         ({ Id = getId id
            NodeId = nodeId
            CreatedOn = getTimestamp ()
            Active = true }
         : Parameters.NewNodeNote)
         |> Operations.insertNodeNote ctx
-        
-    let addNoteVersion (ctx: SqliteContext) (id: IdType option) (noteId: string) (version: int) (title: string) (note: string) =
+
+    let addNoteVersion
+        (ctx: SqliteContext)
+        (id: IdType option)
+        (noteId: string)
+        (version: int)
+        (title: string)
+        (note: string)
+        =
         use ms = new MemoryStream(note.ToUtf8Bytes())
         let hash = ms.GetSHA256Hash()
-        
-        ({
-        Id = getId id
-        NodeNoteId = noteId
-        Version = version
-        Title = title
-        Note = BlobField.FromStream ms
-        Hash = hash
-        CreatedOn = getTimestamp () 
-        Active = true
-    } : Parameters.NewNodeNoteVersion)
-        
+
+        ({ Id = getId id
+           NodeNoteId = noteId
+           Version = version
+           Title = title
+           Note = BlobField.FromStream ms
+           Hash = hash
+           CreatedOn = getTimestamp ()
+           Active = true }
+        : Parameters.NewNodeNoteVersion)
+        |> Operations.insertNodeNoteVersion ctx
+
+    let tryAddLatestNoteVersion
+        (ctx: SqliteContext)
+        (id: IdType option)
+        (noteId: string)
+        (title: string)
+        (note: string)
+        =
+        match getLatestNoteVersion ctx noteId with
+        | Some lnv -> addNoteVersion ctx id noteId (lnv.Version + 1) title note |> Ok
+        | None -> Error $"Node note `{noteId}` does not exist"
+
+    let addNewNote (ctx: SqliteContext) (nodeId: string) (title: string) (note: string) =
+        let id = IdType.Create()
+        addNote ctx (Some id) nodeId
+        addNoteVersion ctx None (id.GetId()) 1 title note
+
+    let tryAddNewNote (ctx: SqliteContext) (nodeId: string) (title: string) (note: string) =
+        match get ctx nodeId with
+        | Some _ -> addNewNote ctx nodeId title note |> Ok
+        | None -> Error $"Node `{nodeId}` does not exist"
