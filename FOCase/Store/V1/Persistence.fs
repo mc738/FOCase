@@ -5,7 +5,7 @@ open System.Text.Json.Serialization
 open Freql.Core.Common
 open Freql.Sqlite
 
-/// Module generated on 31/07/2023 11:51:51 (utc) via Freql.Tools.
+/// Module generated on 01/08/2023 12:07:18 (utc) via Freql.Tools.
 [<RequireQualifiedAccess>]
 module Records =
     /// A record representing a row in the table `compression_types`.
@@ -75,7 +75,7 @@ module Records =
           [<JsonPropertyName("createdOn")>] CreatedOn: DateTime
           [<JsonPropertyName("title")>] Title: string
           [<JsonPropertyName("note")>] Note: BlobField
-          [<JsonPropertyName("hash")>] Hash: string option
+          [<JsonPropertyName("hash")>] Hash: string
           [<JsonPropertyName("active")>] Active: bool }
     
         static member Blank() =
@@ -85,7 +85,7 @@ module Records =
               CreatedOn = DateTime.UtcNow
               Title = String.Empty
               Note = BlobField.Empty()
-              Hash = None
+              Hash = String.Empty
               Active = true }
     
         static member CreateTableSql() = """
@@ -96,7 +96,7 @@ module Records =
 	created_on TEXT NOT NULL,
 	title TEXT NOT NULL,
 	note BLOB NOT NULL,
-	hash TEXT,
+	hash TEXT NOT NULL,
 	active INTEGER NOT NULL,
 	CONSTRAINT connection_document_note_versions_PK PRIMARY KEY (id),
 	CONSTRAINT connection_document_note_versions_UN UNIQUE (connection_document_note_id,version),
@@ -280,7 +280,7 @@ module Records =
           [<JsonPropertyName("createdOn")>] CreatedOn: DateTime
           [<JsonPropertyName("title")>] Title: string
           [<JsonPropertyName("note")>] Note: BlobField
-          [<JsonPropertyName("hash")>] Hash: string option
+          [<JsonPropertyName("hash")>] Hash: string
           [<JsonPropertyName("active")>] Active: bool }
     
         static member Blank() =
@@ -290,7 +290,7 @@ module Records =
               CreatedOn = DateTime.UtcNow
               Title = String.Empty
               Note = BlobField.Empty()
-              Hash = None
+              Hash = String.Empty
               Active = true }
     
         static member CreateTableSql() = """
@@ -301,7 +301,7 @@ module Records =
 	created_on TEXT NOT NULL,
 	title TEXT NOT NULL,
 	note BLOB NOT NULL,
-	hash TEXT,
+	hash TEXT NOT NULL,
 	active INTEGER NOT NULL,
 	CONSTRAINT connection_note_versions_PK PRIMARY KEY (id),
 	CONSTRAINT connection_note_versions_UN UNIQUE (connection_note_id,version),
@@ -404,7 +404,7 @@ module Records =
           [<JsonPropertyName("createdOn")>] CreatedOn: DateTime
           [<JsonPropertyName("title")>] Title: string
           [<JsonPropertyName("note")>] Note: BlobField
-          [<JsonPropertyName("hash")>] Hash: string option
+          [<JsonPropertyName("hash")>] Hash: string
           [<JsonPropertyName("active")>] Active: bool }
     
         static member Blank() =
@@ -414,7 +414,7 @@ module Records =
               CreatedOn = DateTime.UtcNow
               Title = String.Empty
               Note = BlobField.Empty()
-              Hash = None
+              Hash = String.Empty
               Active = true }
     
         static member CreateTableSql() = """
@@ -425,7 +425,7 @@ module Records =
 	created_on TEXT NOT NULL,
 	title TEXT NOT NULL,
 	note BLOB NOT NULL,
-	hash TEXT,
+	hash TEXT NOT NULL,
 	active INTEGER NOT NULL,
 	CONSTRAINT connection_resource_note_versions_PK PRIMARY KEY (id),
 	CONSTRAINT connection_resource_note_versions_UN UNIQUE (connection_resource_note_id,version),
@@ -653,7 +653,7 @@ module Records =
           [<JsonPropertyName("createdOn")>] CreatedOn: DateTime
           [<JsonPropertyName("title")>] Title: string
           [<JsonPropertyName("note")>] Note: BlobField
-          [<JsonPropertyName("hash")>] Hash: string option
+          [<JsonPropertyName("hash")>] Hash: string
           [<JsonPropertyName("active")>] Active: bool }
     
         static member Blank() =
@@ -663,7 +663,7 @@ module Records =
               CreatedOn = DateTime.UtcNow
               Title = String.Empty
               Note = BlobField.Empty()
-              Hash = None
+              Hash = String.Empty
               Active = true }
     
         static member CreateTableSql() = """
@@ -674,7 +674,7 @@ module Records =
 	created_on TEXT NOT NULL,
 	title TEXT NOT NULL,
 	note BLOB NOT NULL,
-	hash TEXT,
+	hash TEXT NOT NULL,
 	active INTEGER NOT NULL,
 	CONSTRAINT document_note_versions_PK PRIMARY KEY (id),
 	CONSTRAINT document_note_versions_UN UNIQUE (document_note_id,version),
@@ -813,7 +813,7 @@ module Records =
           [<JsonPropertyName("createdOn")>] CreatedOn: DateTime
           [<JsonPropertyName("title")>] Title: string
           [<JsonPropertyName("note")>] Note: BlobField
-          [<JsonPropertyName("hash")>] Hash: string option
+          [<JsonPropertyName("hash")>] Hash: string
           [<JsonPropertyName("active")>] Active: bool }
     
         static member Blank() =
@@ -823,7 +823,7 @@ module Records =
               CreatedOn = DateTime.UtcNow
               Title = String.Empty
               Note = BlobField.Empty()
-              Hash = None
+              Hash = String.Empty
               Active = true }
     
         static member CreateTableSql() = """
@@ -834,7 +834,7 @@ module Records =
 	created_on TEXT NOT NULL,
 	title TEXT NOT NULL,
 	note BLOB NOT NULL,
-	hash TEXT,
+	hash TEXT NOT NULL,
 	active INTEGER NOT NULL,
 	CONSTRAINT document_version_note_versions_PK PRIMARY KEY (id),
 	CONSTRAINT document_version_note_versions_UN UNIQUE (document_version_note_id,version),
@@ -1108,7 +1108,7 @@ module Records =
           [<JsonPropertyName("createdOn")>] CreatedOn: DateTime
           [<JsonPropertyName("title")>] Title: string
           [<JsonPropertyName("note")>] Note: BlobField
-          [<JsonPropertyName("hash")>] Hash: string option
+          [<JsonPropertyName("hash")>] Hash: string
           [<JsonPropertyName("active")>] Active: bool }
     
         static member Blank() =
@@ -1118,7 +1118,7 @@ module Records =
               CreatedOn = DateTime.UtcNow
               Title = String.Empty
               Note = BlobField.Empty()
-              Hash = None
+              Hash = String.Empty
               Active = true }
     
         static member CreateTableSql() = """
@@ -1129,7 +1129,7 @@ module Records =
 	created_on TEXT NOT NULL,
 	title TEXT NOT NULL,
 	note BLOB NOT NULL,
-	hash TEXT,
+	hash TEXT NOT NULL,
 	active INTEGER NOT NULL,
 	CONSTRAINT external_connection_document_note_versions_PK PRIMARY KEY (id),
 	CONSTRAINT external_connection_document_note_versions_UN UNIQUE (external_connection_document_note_id,version),
@@ -1313,7 +1313,7 @@ module Records =
           [<JsonPropertyName("createdOn")>] CreatedOn: DateTime
           [<JsonPropertyName("title")>] Title: string
           [<JsonPropertyName("note")>] Note: BlobField
-          [<JsonPropertyName("hash")>] Hash: string option
+          [<JsonPropertyName("hash")>] Hash: string
           [<JsonPropertyName("active")>] Active: bool }
     
         static member Blank() =
@@ -1323,7 +1323,7 @@ module Records =
               CreatedOn = DateTime.UtcNow
               Title = String.Empty
               Note = BlobField.Empty()
-              Hash = None
+              Hash = String.Empty
               Active = true }
     
         static member CreateTableSql() = """
@@ -1334,7 +1334,7 @@ module Records =
 	created_on TEXT NOT NULL,
 	title TEXT NOT NULL,
 	note BLOB NOT NULL,
-	hash TEXT,
+	hash TEXT NOT NULL,
 	active INTEGER NOT NULL,
 	CONSTRAINT external_connection_note_versions_PK PRIMARY KEY (id),
 	CONSTRAINT external_connection_note_versions_UN UNIQUE (external_connection_note_id,version),
@@ -1437,7 +1437,7 @@ module Records =
           [<JsonPropertyName("createdOn")>] CreatedOn: DateTime
           [<JsonPropertyName("title")>] Title: string
           [<JsonPropertyName("note")>] Note: BlobField
-          [<JsonPropertyName("hash")>] Hash: string option
+          [<JsonPropertyName("hash")>] Hash: string
           [<JsonPropertyName("active")>] Active: bool }
     
         static member Blank() =
@@ -1447,7 +1447,7 @@ module Records =
               CreatedOn = DateTime.UtcNow
               Title = String.Empty
               Note = BlobField.Empty()
-              Hash = None
+              Hash = String.Empty
               Active = true }
     
         static member CreateTableSql() = """
@@ -1458,7 +1458,7 @@ module Records =
 	created_on TEXT NOT NULL,
 	title TEXT NOT NULL,
 	note BLOB NOT NULL,
-	hash TEXT,
+	hash TEXT NOT NULL,
 	active INTEGER NOT NULL,
 	CONSTRAINT external_connection_resource_note_versions_PK PRIMARY KEY (id),
 	CONSTRAINT external_connection_resource_note_versions_UN UNIQUE (external_connection_resource_note_id,version),
@@ -1769,7 +1769,7 @@ module Records =
           [<JsonPropertyName("createdOn")>] CreatedOn: DateTime
           [<JsonPropertyName("title")>] Title: string
           [<JsonPropertyName("note")>] Note: BlobField
-          [<JsonPropertyName("hash")>] Hash: string option
+          [<JsonPropertyName("hash")>] Hash: string
           [<JsonPropertyName("active")>] Active: bool }
     
         static member Blank() =
@@ -1779,7 +1779,7 @@ module Records =
               CreatedOn = DateTime.UtcNow
               Title = String.Empty
               Note = BlobField.Empty()
-              Hash = None
+              Hash = String.Empty
               Active = true }
     
         static member CreateTableSql() = """
@@ -1790,7 +1790,7 @@ module Records =
 	created_on TEXT NOT NULL,
 	title TEXT NOT NULL,
 	note BLOB NOT NULL,
-	hash TEXT,
+	hash TEXT NOT NULL,
 	active INTEGER NOT NULL,
 	CONSTRAINT node_document_note_versions_PK PRIMARY KEY (id),
 	CONSTRAINT node_document_note_versions_UN UNIQUE (node_document_note_id,version),
@@ -1974,7 +1974,7 @@ module Records =
           [<JsonPropertyName("createdOn")>] CreatedOn: DateTime
           [<JsonPropertyName("title")>] Title: string
           [<JsonPropertyName("note")>] Note: BlobField
-          [<JsonPropertyName("hash")>] Hash: string option
+          [<JsonPropertyName("hash")>] Hash: string
           [<JsonPropertyName("active")>] Active: bool }
     
         static member Blank() =
@@ -1984,7 +1984,7 @@ module Records =
               CreatedOn = DateTime.UtcNow
               Title = String.Empty
               Note = BlobField.Empty()
-              Hash = None
+              Hash = String.Empty
               Active = true }
     
         static member CreateTableSql() = """
@@ -1995,7 +1995,7 @@ module Records =
 	created_on TEXT NOT NULL,
 	title TEXT NOT NULL,
 	note BLOB NOT NULL,
-	hash TEXT,
+	hash TEXT NOT NULL,
 	active INTEGER NOT NULL,
 	CONSTRAINT node_note_versions_PK PRIMARY KEY (id),
 	CONSTRAINT node_note_versions_UN UNIQUE (node_note_id,version),
@@ -2098,7 +2098,7 @@ module Records =
           [<JsonPropertyName("createdOn")>] CreatedOn: DateTime
           [<JsonPropertyName("title")>] Title: string
           [<JsonPropertyName("note")>] Note: BlobField
-          [<JsonPropertyName("hash")>] Hash: string option
+          [<JsonPropertyName("hash")>] Hash: string
           [<JsonPropertyName("active")>] Active: bool }
     
         static member Blank() =
@@ -2108,7 +2108,7 @@ module Records =
               CreatedOn = DateTime.UtcNow
               Title = String.Empty
               Note = BlobField.Empty()
-              Hash = None
+              Hash = String.Empty
               Active = true }
     
         static member CreateTableSql() = """
@@ -2119,7 +2119,7 @@ module Records =
 	created_on TEXT NOT NULL,
 	title TEXT NOT NULL,
 	note BLOB NOT NULL,
-	hash TEXT,
+	hash TEXT NOT NULL,
 	active INTEGER NOT NULL,
 	CONSTRAINT node_resource_note_versions_PK PRIMARY KEY (id),
 	CONSTRAINT node_resource_note_versions_UN UNIQUE (node_resource_note_id,version),
@@ -2335,7 +2335,7 @@ module Records =
           [<JsonPropertyName("createdOn")>] CreatedOn: DateTime
           [<JsonPropertyName("title")>] Title: string
           [<JsonPropertyName("note")>] Note: BlobField
-          [<JsonPropertyName("hash")>] Hash: string option
+          [<JsonPropertyName("hash")>] Hash: string
           [<JsonPropertyName("active")>] Active: bool }
     
         static member Blank() =
@@ -2345,7 +2345,7 @@ module Records =
               CreatedOn = DateTime.UtcNow
               Title = String.Empty
               Note = BlobField.Empty()
-              Hash = None
+              Hash = String.Empty
               Active = true }
     
         static member CreateTableSql() = """
@@ -2356,7 +2356,7 @@ module Records =
 	created_on TEXT NOT NULL,
 	title TEXT NOT NULL,
 	note BLOB NOT NULL,
-	hash TEXT,
+	hash TEXT NOT NULL,
 	active INTEGER NOT NULL,
 	CONSTRAINT resource_note_versions_PK PRIMARY KEY (id),
 	CONSTRAINT resource_note_versions_UN UNIQUE (resource_note_id,version),
@@ -2495,7 +2495,7 @@ module Records =
           [<JsonPropertyName("createdOn")>] CreatedOn: DateTime
           [<JsonPropertyName("title")>] Title: string
           [<JsonPropertyName("note")>] Note: BlobField
-          [<JsonPropertyName("hash")>] Hash: string option
+          [<JsonPropertyName("hash")>] Hash: string
           [<JsonPropertyName("active")>] Active: bool }
     
         static member Blank() =
@@ -2505,7 +2505,7 @@ module Records =
               CreatedOn = DateTime.UtcNow
               Title = String.Empty
               Note = BlobField.Empty()
-              Hash = None
+              Hash = String.Empty
               Active = true }
     
         static member CreateTableSql() = """
@@ -2516,7 +2516,7 @@ module Records =
 	created_on TEXT NOT NULL,
 	title TEXT NOT NULL,
 	note BLOB NOT NULL,
-	hash TEXT,
+	hash TEXT NOT NULL,
 	active INTEGER NOT NULL,
 	CONSTRAINT resource_version_note_versions_PK PRIMARY KEY (id),
 	CONSTRAINT resource_version_note_versions_UN UNIQUE (resource_version_note_id,version),
@@ -2728,7 +2728,7 @@ module Records =
         static member TableName() = "tags"
     
 
-/// Module generated on 31/07/2023 11:51:51 (utc) via Freql.Tools.
+/// Module generated on 01/08/2023 12:07:18 (utc) via Freql.Tools.
 [<RequireQualifiedAccess>]
 module Parameters =
     /// A record representing a new row in the table `compression_types`.
@@ -2763,7 +2763,7 @@ module Parameters =
           [<JsonPropertyName("createdOn")>] CreatedOn: DateTime
           [<JsonPropertyName("title")>] Title: string
           [<JsonPropertyName("note")>] Note: BlobField
-          [<JsonPropertyName("hash")>] Hash: string option
+          [<JsonPropertyName("hash")>] Hash: string
           [<JsonPropertyName("active")>] Active: bool }
     
         static member Blank() =
@@ -2773,7 +2773,7 @@ module Parameters =
               CreatedOn = DateTime.UtcNow
               Title = String.Empty
               Note = BlobField.Empty()
-              Hash = None
+              Hash = String.Empty
               Active = true }
     
     
@@ -2847,7 +2847,7 @@ module Parameters =
           [<JsonPropertyName("createdOn")>] CreatedOn: DateTime
           [<JsonPropertyName("title")>] Title: string
           [<JsonPropertyName("note")>] Note: BlobField
-          [<JsonPropertyName("hash")>] Hash: string option
+          [<JsonPropertyName("hash")>] Hash: string
           [<JsonPropertyName("active")>] Active: bool }
     
         static member Blank() =
@@ -2857,7 +2857,7 @@ module Parameters =
               CreatedOn = DateTime.UtcNow
               Title = String.Empty
               Note = BlobField.Empty()
-              Hash = None
+              Hash = String.Empty
               Active = true }
     
     
@@ -2899,7 +2899,7 @@ module Parameters =
           [<JsonPropertyName("createdOn")>] CreatedOn: DateTime
           [<JsonPropertyName("title")>] Title: string
           [<JsonPropertyName("note")>] Note: BlobField
-          [<JsonPropertyName("hash")>] Hash: string option
+          [<JsonPropertyName("hash")>] Hash: string
           [<JsonPropertyName("active")>] Active: bool }
     
         static member Blank() =
@@ -2909,7 +2909,7 @@ module Parameters =
               CreatedOn = DateTime.UtcNow
               Title = String.Empty
               Note = BlobField.Empty()
-              Hash = None
+              Hash = String.Empty
               Active = true }
     
     
@@ -3001,7 +3001,7 @@ module Parameters =
           [<JsonPropertyName("createdOn")>] CreatedOn: DateTime
           [<JsonPropertyName("title")>] Title: string
           [<JsonPropertyName("note")>] Note: BlobField
-          [<JsonPropertyName("hash")>] Hash: string option
+          [<JsonPropertyName("hash")>] Hash: string
           [<JsonPropertyName("active")>] Active: bool }
     
         static member Blank() =
@@ -3011,7 +3011,7 @@ module Parameters =
               CreatedOn = DateTime.UtcNow
               Title = String.Empty
               Note = BlobField.Empty()
-              Hash = None
+              Hash = String.Empty
               Active = true }
     
     
@@ -3067,7 +3067,7 @@ module Parameters =
           [<JsonPropertyName("createdOn")>] CreatedOn: DateTime
           [<JsonPropertyName("title")>] Title: string
           [<JsonPropertyName("note")>] Note: BlobField
-          [<JsonPropertyName("hash")>] Hash: string option
+          [<JsonPropertyName("hash")>] Hash: string
           [<JsonPropertyName("active")>] Active: bool }
     
         static member Blank() =
@@ -3077,7 +3077,7 @@ module Parameters =
               CreatedOn = DateTime.UtcNow
               Title = String.Empty
               Note = BlobField.Empty()
-              Hash = None
+              Hash = String.Empty
               Active = true }
     
     
@@ -3187,7 +3187,7 @@ module Parameters =
           [<JsonPropertyName("createdOn")>] CreatedOn: DateTime
           [<JsonPropertyName("title")>] Title: string
           [<JsonPropertyName("note")>] Note: BlobField
-          [<JsonPropertyName("hash")>] Hash: string option
+          [<JsonPropertyName("hash")>] Hash: string
           [<JsonPropertyName("active")>] Active: bool }
     
         static member Blank() =
@@ -3197,7 +3197,7 @@ module Parameters =
               CreatedOn = DateTime.UtcNow
               Title = String.Empty
               Note = BlobField.Empty()
-              Hash = None
+              Hash = String.Empty
               Active = true }
     
     
@@ -3271,7 +3271,7 @@ module Parameters =
           [<JsonPropertyName("createdOn")>] CreatedOn: DateTime
           [<JsonPropertyName("title")>] Title: string
           [<JsonPropertyName("note")>] Note: BlobField
-          [<JsonPropertyName("hash")>] Hash: string option
+          [<JsonPropertyName("hash")>] Hash: string
           [<JsonPropertyName("active")>] Active: bool }
     
         static member Blank() =
@@ -3281,7 +3281,7 @@ module Parameters =
               CreatedOn = DateTime.UtcNow
               Title = String.Empty
               Note = BlobField.Empty()
-              Hash = None
+              Hash = String.Empty
               Active = true }
     
     
@@ -3323,7 +3323,7 @@ module Parameters =
           [<JsonPropertyName("createdOn")>] CreatedOn: DateTime
           [<JsonPropertyName("title")>] Title: string
           [<JsonPropertyName("note")>] Note: BlobField
-          [<JsonPropertyName("hash")>] Hash: string option
+          [<JsonPropertyName("hash")>] Hash: string
           [<JsonPropertyName("active")>] Active: bool }
     
         static member Blank() =
@@ -3333,7 +3333,7 @@ module Parameters =
               CreatedOn = DateTime.UtcNow
               Title = String.Empty
               Note = BlobField.Empty()
-              Hash = None
+              Hash = String.Empty
               Active = true }
     
     
@@ -3459,7 +3459,7 @@ module Parameters =
           [<JsonPropertyName("createdOn")>] CreatedOn: DateTime
           [<JsonPropertyName("title")>] Title: string
           [<JsonPropertyName("note")>] Note: BlobField
-          [<JsonPropertyName("hash")>] Hash: string option
+          [<JsonPropertyName("hash")>] Hash: string
           [<JsonPropertyName("active")>] Active: bool }
     
         static member Blank() =
@@ -3469,7 +3469,7 @@ module Parameters =
               CreatedOn = DateTime.UtcNow
               Title = String.Empty
               Note = BlobField.Empty()
-              Hash = None
+              Hash = String.Empty
               Active = true }
     
     
@@ -3543,7 +3543,7 @@ module Parameters =
           [<JsonPropertyName("createdOn")>] CreatedOn: DateTime
           [<JsonPropertyName("title")>] Title: string
           [<JsonPropertyName("note")>] Note: BlobField
-          [<JsonPropertyName("hash")>] Hash: string option
+          [<JsonPropertyName("hash")>] Hash: string
           [<JsonPropertyName("active")>] Active: bool }
     
         static member Blank() =
@@ -3553,7 +3553,7 @@ module Parameters =
               CreatedOn = DateTime.UtcNow
               Title = String.Empty
               Note = BlobField.Empty()
-              Hash = None
+              Hash = String.Empty
               Active = true }
     
     
@@ -3595,7 +3595,7 @@ module Parameters =
           [<JsonPropertyName("createdOn")>] CreatedOn: DateTime
           [<JsonPropertyName("title")>] Title: string
           [<JsonPropertyName("note")>] Note: BlobField
-          [<JsonPropertyName("hash")>] Hash: string option
+          [<JsonPropertyName("hash")>] Hash: string
           [<JsonPropertyName("active")>] Active: bool }
     
         static member Blank() =
@@ -3605,7 +3605,7 @@ module Parameters =
               CreatedOn = DateTime.UtcNow
               Title = String.Empty
               Note = BlobField.Empty()
-              Hash = None
+              Hash = String.Empty
               Active = true }
     
     
@@ -3691,7 +3691,7 @@ module Parameters =
           [<JsonPropertyName("createdOn")>] CreatedOn: DateTime
           [<JsonPropertyName("title")>] Title: string
           [<JsonPropertyName("note")>] Note: BlobField
-          [<JsonPropertyName("hash")>] Hash: string option
+          [<JsonPropertyName("hash")>] Hash: string
           [<JsonPropertyName("active")>] Active: bool }
     
         static member Blank() =
@@ -3701,7 +3701,7 @@ module Parameters =
               CreatedOn = DateTime.UtcNow
               Title = String.Empty
               Note = BlobField.Empty()
-              Hash = None
+              Hash = String.Empty
               Active = true }
     
     
@@ -3757,7 +3757,7 @@ module Parameters =
           [<JsonPropertyName("createdOn")>] CreatedOn: DateTime
           [<JsonPropertyName("title")>] Title: string
           [<JsonPropertyName("note")>] Note: BlobField
-          [<JsonPropertyName("hash")>] Hash: string option
+          [<JsonPropertyName("hash")>] Hash: string
           [<JsonPropertyName("active")>] Active: bool }
     
         static member Blank() =
@@ -3767,7 +3767,7 @@ module Parameters =
               CreatedOn = DateTime.UtcNow
               Title = String.Empty
               Note = BlobField.Empty()
-              Hash = None
+              Hash = String.Empty
               Active = true }
     
     
@@ -3847,7 +3847,7 @@ module Parameters =
               Active = true }
     
     
-/// Module generated on 31/07/2023 11:51:51 (utc) via Freql.Tools.
+/// Module generated on 01/08/2023 12:07:18 (utc) via Freql.Tools.
 [<RequireQualifiedAccess>]
 module Operations =
 
