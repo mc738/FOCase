@@ -83,6 +83,12 @@ module Nodes =
     let getNodeLabel (ctx: SqliteContext) (nodeId: string) (label: string) =
         Operations.selectNodeLabelRecord ctx [ "WHERE node_id = @0 AND label = @1" ] [ nodeId; label ]
 
+    let getAllNodeLabels (ctx: SqliteContext) (nodeId: string) =
+        Operations.selectNodeLabelRecords ctx [ "WHERE node_id = @0" ] [ nodeId ]
+    
+    let getAllActiveNodeLabels (ctx: SqliteContext) (nodeId: string) =
+        Operations.selectNodeLabelRecords ctx [ "WHERE node_id = @0 AND active = TRUE" ] [ nodeId ]
+        
     let addNodeLabel (ctx: SqliteContext) (nodeId: string) (label: string) (weight: decimal) =
         ({ NodeId = nodeId
            Label = label
