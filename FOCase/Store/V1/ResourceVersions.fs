@@ -80,3 +80,54 @@ module ResourceVersions =
 
     let deactivate (ctx: SqliteContext) (id: string) =
         ctx.ExecuteVerbatimNonQueryAnon("UPDATE resource_versions SET active = FALSE WHERE id = @0", [ id ])
+
+    // *** Metadata ***
+
+    let getMetadataValue (ctx: SqliteContext) (resourceVersionId: string) (key: string) =
+        Operations.selectResourceVersionMetadataItemRecord
+            ctx
+            [ "WHERE resource_version_id = @0 AND item_key = @1" ]
+            [ resourceVersionId; key ]
+
+    let addMetadataValue (ctx: SqliteContext) (resourceVersionId: string) (key: string) (value: string) =
+        ({ ResourceVersionId = resourceVersionId
+           ItemKey = key
+           ItemValue = value
+           CreatedOn = getTimestamp ()
+           Active = true }
+        : Parameters.NewResourceVersionMetadataItem)
+        |> Operations.insertResourceVersionMetadataItem ctx
+
+    let tryAddMetadataValue (ctx: SqliteContext) (resourceVersionId: string) (key: string) (value: string) =
+        match getMetadataValue ctx resourceVersionId key with
+        | Some _ -> Error $"Metadata value `{key}` already exists for resource version `{resourceVersionId}`"
+        | None -> addMetadataValue ctx resourceVersionId key value |> Ok
+
+    let updateMetadataValue (ctx: SqliteContext) (resourceVersionId: string) (key: string) (value: string) =
+        ctx.ExecuteVerbatimNonQueryAnon(
+            "UPDATE resource_version_metadata SET item_value = @0 WHERE resource_version_id = @1 AND item_key = @2",
+            [ value; resourceVersionId; key ]
+        )
+        |> ignore
+
+    let tryUpdateMetadataValue (ctx: SqliteContext) (resourceVersionId: string) (key: string) (value: string) =
+        match getMetadataValue ctx resourceVersionId key with
+        | Some _ -> updateMetadataValue ctx resourceVersionId key value |> Ok
+        | None -> Error $"Metadata value `{key}` does not exist for resource version `{resourceVersionId}`"
+
+    let addOrUpdateMetadataValue (ctx: SqliteContext) (resourceVersionId: string) (key: string) (value: string) =
+        match getMetadataValue ctx resourceVersionId key with
+        | Some _ -> updateMetadataValue ctx resourceVersionId key value
+        | None -> addMetadataValue ctx resourceVersionId key value
+
+    let activateMetadataItem (ctx: SqliteContext) (resourceVersionId: string) (key: string) =
+        ctx.ExecuteVerbatimNonQueryAnon(
+            "UPDATE resource_version_metadata SET active = TRUE WHERE resource_version_id = @0 AND item_key = @1",
+            [ resourceVersionId; key ]
+        )
+
+    let deactivateMetadataItem (ctx: SqliteContext) (resourceVersionId: string) (key: string) =
+        ctx.ExecuteVerbatimNonQueryAnon(
+            "UPDATE resource_version_metadata SET active = FALSE WHERE resource_version_id = @0 AND item_key = @1",
+            [ resourceVersionId; key ]
+        )
