@@ -4,6 +4,11 @@
 [<RequireQualifiedAccess>]
 module Documents =
 
+    
+    open System.IO
+    open FsToolbox.Extensions.Streams
+    open FsToolbox.Extensions.Strings
+    open Freql.Core.Common.Types
     open Freql.Sqlite
     open FOCase.Core
     open FOCase.Store.V1.Persistence
