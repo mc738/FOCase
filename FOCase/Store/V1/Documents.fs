@@ -82,3 +82,41 @@ module Documents =
             "UPDATE document_metadata SET active = FALSE WHERE document_id = @0 AND item_key = @1",
             [ documentId; key ]
         )
+
+    // *** Tags ***
+
+    let getDocumentTag (ctx: SqliteContext) (documentId: string) (tag: string) =
+        Operations.selectDocumentTagRecord ctx [ "WHERE document_id = @0 AND tag = @1" ] [ documentId; tag ]
+
+    let getAllDocumentTags (ctx: SqliteContext) (documentId: string) =
+        Operations.selectDocumentTagRecords ctx [ "WHERE document_id = @0" ] [ documentId ]
+
+    let getAllActiveDocumentTags (ctx: SqliteContext) (documentId: string) =
+        Operations.selectDocumentTagRecords ctx [ "WHERE document_id = @0 AND active = TRUE" ] [ documentId ]
+
+    let addDocumentTag (ctx: SqliteContext) (documentId: string) (tag: string) =
+        ({ DocumentId = documentId
+           Tag = tag
+           CreatedOn = getTimestamp ()
+           Active = true }
+        : Parameters.NewDocumentTag)
+        |> Operations.insertDocumentTag ctx
+
+    let tryAddDocumentTag (ctx: SqliteContext) (documentId: string) (tag: string) =
+        match Tags.get ctx tag, get ctx documentId, getDocumentTag ctx documentId tag with
+        | None, _, _ -> Error $"Tag `{tag}` not found"
+        | _, None, _ -> Error $"Document `{documentId}` not found"
+        | _, _, Some _ -> Error $"Tag `{tag}` already attached to document `{documentId}`"
+        | Some l, Some n, None -> addDocumentTag ctx n.Id l.Name |> Ok
+
+    let activateDocumentTag (ctx: SqliteContext) (documentId: string) (tag: string) =
+        ctx.ExecuteVerbatimNonQueryAnon(
+            "UPDATE document_tags SET active = TRUE WHERE document_id = @0 AND tag = @1",
+            [ documentId; tag ]
+        )
+
+    let deactivateDocumentTag (ctx: SqliteContext) (documentId: string) (tag: string) =
+        ctx.ExecuteVerbatimNonQueryAnon(
+            "UPDATE document_tags SET active = FALSE WHERE document_id = @0 AND tag = @1",
+            [ documentId; tag ]
+        )
