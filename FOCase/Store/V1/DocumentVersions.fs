@@ -66,3 +66,51 @@ module DocumentVersions =
 
     let deactivate (ctx: SqliteContext) (id: string) =
         ctx.ExecuteVerbatimNonQueryAnon("UPDATE document_versions SET active = FALSE WHERE id = @0", [ id ])
+
+    // *** Metadata ***
+    
+    let getMetadataValue (ctx: SqliteContext) (documentVersionId: string) (key: string) =
+        Operations.selectDocumentVersionMetadataItemRecord ctx [ "WHERE document_version_id = @0 AND item_key = @1" ] [ documentVersionId; key ]
+
+    let addMetadataValue (ctx: SqliteContext) (document_versionId: string) (key: string) (value: string) =
+        ({ DocumentVersionId = document_versionId
+           ItemKey = key
+           ItemValue = value
+           CreatedOn = getTimestamp ()
+           Active = true }
+        : Parameters.NewDocumentVersionMetadataItem)
+        |> Operations.insertDocumentVersionMetadataItem ctx
+
+    let tryAddMetadataValue (ctx: SqliteContext) (documentVersionId: string) (key: string) (value: string) =
+        match getMetadataValue ctx documentVersionId key with
+        | Some _ -> Error $"Metadata value `{key}` already exists for document version `{documentVersionId}`"
+        | None -> addMetadataValue ctx documentVersionId key value |> Ok
+
+    let updateMetadataValue (ctx: SqliteContext) (documentVersionId: string) (key: string) (value: string) =
+        ctx.ExecuteVerbatimNonQueryAnon(
+            "UPDATE document_version_metadata SET item_value = @0 WHERE document_version_id = @1 AND item_key = @2",
+            [ value; documentVersionId; key ]
+        )
+        |> ignore
+
+    let tryUpdateMetadataValue (ctx: SqliteContext) (documentVersionId: string) (key: string) (value: string) =
+        match getMetadataValue ctx documentVersionId key with
+        | Some _ -> updateMetadataValue ctx documentVersionId key value |> Ok
+        | None -> Error $"Metadata value `{key}` does not exist for document version `{documentVersionId}`"
+
+    let addOrUpdateMetadataValue (ctx: SqliteContext) (documentVersionId: string) (key: string) (value: string) =
+        match getMetadataValue ctx documentVersionId key with
+        | Some _ -> updateMetadataValue ctx documentVersionId key value
+        | None -> addMetadataValue ctx documentVersionId key value
+
+    let activateMetadataItem (ctx: SqliteContext) (documentVersionId: string) (key: string) =
+        ctx.ExecuteVerbatimNonQueryAnon(
+            "UPDATE document_version_metadata SET active = TRUE WHERE document_version_id = @0 AND item_key = @1",
+            [ documentVersionId; key ]
+        )
+
+    let deactivateMetadataItem (ctx: SqliteContext) (documentVersionId: string) (key: string) =
+        ctx.ExecuteVerbatimNonQueryAnon(
+            "UPDATE document_version_metadata SET active = FALSE WHERE document_version_id = @0 AND item_key = @1",
+            [ documentVersionId; key ]
+        )
