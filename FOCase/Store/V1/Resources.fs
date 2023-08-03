@@ -79,3 +79,41 @@ module Resources =
             "UPDATE resource_metadata SET active = FALSE WHERE resource_id = @0 AND item_key = @1",
             [ resourceId; key ]
         )
+        
+    // *** Tags ***
+
+    let getResourceTag (ctx: SqliteContext) (resourceId: string) (tag: string) =
+        Operations.selectResourceTagRecord ctx [ "WHERE resource_id = @0 AND tag = @1" ] [ resourceId; tag ]
+
+    let getAllResourceTags (ctx: SqliteContext) (resourceId: string) =
+        Operations.selectResourceTagRecords ctx [ "WHERE resource_id = @0" ] [ resourceId ]
+
+    let getAllActiveResourceTags (ctx: SqliteContext) (resourceId: string) =
+        Operations.selectResourceTagRecords ctx [ "WHERE resource_id = @0 AND active = TRUE" ] [ resourceId ]
+
+    let addResourceTag (ctx: SqliteContext) (resourceId: string) (tag: string) =
+        ({ ResourceId = resourceId
+           Tag = tag
+           CreatedOn = getTimestamp ()
+           Active = true }
+        : Parameters.NewResourceTag)
+        |> Operations.insertResourceTag ctx
+
+    let tryAddResourceTag (ctx: SqliteContext) (resourceId: string) (tag: string) =
+        match Tags.get ctx tag, get ctx resourceId, getResourceTag ctx resourceId tag with
+        | None, _, _ -> Error $"Tag `{tag}` not found"
+        | _, None, _ -> Error $"Resource `{resourceId}` not found"
+        | _, _, Some _ -> Error $"Tag `{tag}` already attached to resource `{resourceId}`"
+        | Some l, Some n, None -> addResourceTag ctx n.Id l.Name |> Ok
+
+    let activateResourceTag (ctx: SqliteContext) (resourceId: string) (tag: string) =
+        ctx.ExecuteVerbatimNonQueryAnon(
+            "UPDATE resource_tags SET active = TRUE WHERE resource_id = @0 AND tag = @1",
+            [ resourceId; tag ]
+        )
+
+    let deactivateResourceTag (ctx: SqliteContext) (resourceId: string) (tag: string) =
+        ctx.ExecuteVerbatimNonQueryAnon(
+            "UPDATE resource_tags SET active = FALSE WHERE resource_id = @0 AND tag = @1",
+            [ resourceId; tag ]
+        )
