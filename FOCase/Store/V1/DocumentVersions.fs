@@ -114,3 +114,41 @@ module DocumentVersions =
             "UPDATE document_version_metadata SET active = FALSE WHERE document_version_id = @0 AND item_key = @1",
             [ documentVersionId; key ]
         )
+
+    // *** Tags ***
+
+    let getDocumentVersionTag (ctx: SqliteContext) (documentVersionId: string) (tag: string) =
+        Operations.selectDocumentVersionTagRecord ctx [ "WHERE document_version_id = @0 AND tag = @1" ] [ documentVersionId; tag ]
+
+    let getAllDocumentVersionTags (ctx: SqliteContext) (documentVersionId: string) =
+        Operations.selectDocumentVersionTagRecords ctx [ "WHERE document_version_id = @0" ] [ documentVersionId ]
+
+    let getAllActiveDocumentVersionTags (ctx: SqliteContext) (documentVersionId: string) =
+        Operations.selectDocumentVersionTagRecords ctx [ "WHERE document_version_id = @0 AND active = TRUE" ] [ documentVersionId ]
+
+    let addDocumentVersionTag (ctx: SqliteContext) (documentVersionId: string) (tag: string) =
+        ({ DocumentVersionId = documentVersionId
+           Tag = tag
+           CreatedOn = getTimestamp ()
+           Active = true }
+        : Parameters.NewDocumentVersionTag)
+        |> Operations.insertDocumentVersionTag ctx
+
+    let tryAddDocumentVersionTag (ctx: SqliteContext) (documentVersionId: string) (tag: string) =
+        match Tags.get ctx tag, get ctx documentVersionId, getDocumentVersionTag ctx documentVersionId tag with
+        | None, _, _ -> Error $"Tag `{tag}` not found"
+        | _, None, _ -> Error $"Document version `{documentVersionId}` not found"
+        | _, _, Some _ -> Error $"Tag `{tag}` already attached to document version `{documentVersionId}`"
+        | Some l, Some n, None -> addDocumentVersionTag ctx n.Id l.Name |> Ok
+
+    let activateDocumentVersionTag (ctx: SqliteContext) (documentVersionId: string) (tag: string) =
+        ctx.ExecuteVerbatimNonQueryAnon(
+            "UPDATE document_version_tags SET active = TRUE WHERE document_version_id = @0 AND tag = @1",
+            [ documentVersionId; tag ]
+        )
+
+    let deactivateDocumentVersionTag (ctx: SqliteContext) (documentVersionId: string) (tag: string) =
+        ctx.ExecuteVerbatimNonQueryAnon(
+            "UPDATE document_version_tags SET active = FALSE WHERE document_version_id = @0 AND tag = @1",
+            [ documentVersionId; tag ]
+        )
