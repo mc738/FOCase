@@ -84,3 +84,48 @@ module Connections =
             "UPDATE connection_metadata SET active = FALSE WHERE connection_id = @0 AND item_key = @1",
             [ connectionId; key ]
         )
+
+    // *** Labels
+
+    let getConnectionLabel (ctx: SqliteContext) (connectionId: string) (label: string) =
+        Operations.selectConnectionLabelRecord ctx [ "WHERE connection_id = @0 AND label = @1" ] [ connectionId; label ]
+
+    let getAllConnectionLabels (ctx: SqliteContext) (connectionId: string) =
+        Operations.selectConnectionLabelRecords ctx [ "WHERE connection_id = @0" ] [ connectionId ]
+
+    let getAllActiveConnectionLabels (ctx: SqliteContext) (connectionId: string) =
+        Operations.selectConnectionLabelRecords ctx [ "WHERE connection_id = @0 AND active = TRUE" ] [ connectionId ]
+
+    let addConnectionLabel (ctx: SqliteContext) (connectionId: string) (label: string) (weight: decimal) =
+        ({ ConnectionId = connectionId
+           Label = label
+           Weight = weight
+           CreatedOn = getTimestamp ()
+           Active = true }
+        : Parameters.NewConnectionLabel)
+        |> Operations.insertConnectionLabel ctx
+
+    let tryAddConnectionLabel (ctx: SqliteContext) (connectionId: string) (label: string) (weight: decimal) =
+        match Labels.get ctx label, get ctx connectionId, getConnectionLabel ctx connectionId label with
+        | None, _, _ -> Error $"Label `{label}` not found"
+        | _, None, _ -> Error $"Connection `{connectionId}` not found"
+        | _, _, Some _ -> Error $"Label `{label}` already attached to connection `{connectionId}`"
+        | Some l, Some n, None -> addConnectionLabel ctx n.Id l.Name weight |> Ok
+
+    let activateConnectionLabel (ctx: SqliteContext) (connectionId: string) (label: string) =
+        ctx.ExecuteVerbatimNonQueryAnon(
+            "UPDATE connection_labels SET active = TRUE WHERE connection_id = @0 AND label = @1",
+            [ connectionId; label ]
+        )
+
+    let deactivateConnectionLabel (ctx: SqliteContext) (connectionId: string) (label: string) =
+        ctx.ExecuteVerbatimNonQueryAnon(
+            "UPDATE connection_labels SET active = FALSE WHERE connection_id = @0 AND label = @1",
+            [ connectionId; label ]
+        )
+
+    let updateConnectionLabelWeight (ctx: SqliteContext) (connectionId: string) (label: string) (weight: decimal) =
+        ctx.ExecuteVerbatimNonQueryAnon(
+            "UPDATE connection_labels SET weight = @0 WHERE connection_id = @1 AND label = @2",
+            [ weight; connectionId; label ]
+        )
