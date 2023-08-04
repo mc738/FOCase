@@ -8,18 +8,20 @@ module Connections =
     open FOCase.Store
     open FOCase.Store.V1.Persistence
 
+    // *** General ***
+    
     let add
         (ctx: SqliteContext)
         (id: IdType option)
         (name: string)
-        (fromNode: string)
-        (toNode: string)
+        (fromConnection: string)
+        (toConnection: string)
         (twoWay: bool)
         =
         ({ Id = getId id
            Name = name
-           FromNode = fromNode
-           ToNode = toNode
+           FromNode = fromConnection
+           ToNode = toConnection
            TwoWay = twoWay
            CreatedOn = getTimestamp ()
            Active = true }
@@ -29,8 +31,56 @@ module Connections =
     let get (ctx: SqliteContext) (id: string) =
         Operations.selectConnectionRecord ctx [ "WHERE id = @0" ] [ id ]
 
-    let getActiveFromNode (ctx: SqliteContext) (nodeId: string) =
-        Operations.selectConnectionRecord ctx [ "WHERE from_node = @0 AND active = TRUE" ] [ nodeId ]
+    let getActiveFromConnection (ctx: SqliteContext) (connectionId: string) =
+        Operations.selectConnectionRecord ctx [ "WHERE from_node = @0 AND active = TRUE" ] [ connectionId ]
 
-    let getActiveToNode (ctx: SqliteContext) (nodeId: string) =
-        Operations.selectConnectionRecord ctx [ "WHERE to_node = @0 AND active = TRUE" ] [ nodeId ]
+    let getActiveToConnection (ctx: SqliteContext) (connectionId: string) =
+        Operations.selectConnectionRecord ctx [ "WHERE to_node = @0 AND active = TRUE" ] [ connectionId ]
+
+    // *** Metadata ***
+
+    let getMetadataValue (ctx: SqliteContext) (connectionId: string) (key: string) =
+        Operations.selectConnectionMetadataItemRecord ctx [ "WHERE connection_id = @0 AND item_key = @1" ] [ connectionId; key ]
+
+    let addMetadataValue (ctx: SqliteContext) (connectionId: string) (key: string) (value: string) =
+        ({ ConnectionId = connectionId
+           ItemKey = key
+           ItemValue = value
+           CreatedOn = getTimestamp ()
+           Active = true }
+        : Parameters.NewConnectionMetadataItem)
+        |> Operations.insertConnectionMetadataItem ctx
+
+    let tryAddMetadataValue (ctx: SqliteContext) (connectionId: string) (key: string) (value: string) =
+        match getMetadataValue ctx connectionId key with
+        | Some _ -> Error $"Metadata value `{key}` already exists for connection `{connectionId}`"
+        | None -> addMetadataValue ctx connectionId key value |> Ok
+
+    let updateMetadataValue (ctx: SqliteContext) (connectionId: string) (key: string) (value: string) =
+        ctx.ExecuteVerbatimNonQueryAnon(
+            "UPDATE connection_metadata SET item_value = @0 WHERE connection_id = @1 AND item_key = @2",
+            [ value; connectionId; key ]
+        )
+        |> ignore
+
+    let tryUpdateMetadataValue (ctx: SqliteContext) (connectionId: string) (key: string) (value: string) =
+        match getMetadataValue ctx connectionId key with
+        | Some _ -> updateMetadataValue ctx connectionId key value |> Ok
+        | None -> Error $"Metadata value `{key}` does not exist for connection `{connectionId}`"
+
+    let addOrUpdateMetadataValue (ctx: SqliteContext) (connectionId: string) (key: string) (value: string) =
+        match getMetadataValue ctx connectionId key with
+        | Some _ -> updateMetadataValue ctx connectionId key value
+        | None -> addMetadataValue ctx connectionId key value
+
+    let activateMetadataItem (ctx: SqliteContext) (connectionId: string) (key: string) =
+        ctx.ExecuteVerbatimNonQueryAnon(
+            "UPDATE connection_metadata SET active = TRUE WHERE connection_id = @0 AND item_key = @1",
+            [ connectionId; key ]
+        )
+
+    let deactivateMetadataItem (ctx: SqliteContext) (connectionId: string) (key: string) =
+        ctx.ExecuteVerbatimNonQueryAnon(
+            "UPDATE connection_metadata SET active = FALSE WHERE connection_id = @0 AND item_key = @1",
+            [ connectionId; key ]
+        )
