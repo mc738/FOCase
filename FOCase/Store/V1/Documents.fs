@@ -4,7 +4,6 @@
 [<RequireQualifiedAccess>]
 module Documents =
 
-    
     open System.IO
     open FsToolbox.Extensions.Streams
     open FsToolbox.Extensions.Strings
