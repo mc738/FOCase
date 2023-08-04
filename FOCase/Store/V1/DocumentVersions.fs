@@ -152,3 +152,90 @@ module DocumentVersions =
             "UPDATE document_version_tags SET active = FALSE WHERE document_version_id = @0 AND tag = @1",
             [ documentVersionId; tag ]
         )
+        
+    // *** Notes ***
+
+    let getNote (ctx: SqliteContext) (noteId: string) =
+        Operations.selectDocumentVersionNoteRecord ctx [ "WHERE note_id = @0" ] [ noteId ]
+
+    let getAllActiveNotes (ctx: SqliteContext) (documentVersionId: string) =
+        Operations.selectDocumentVersionNoteRecord ctx [ "WHERE document_version_id = @0 AND active = TRUE;" ] [ documentVersionId ]
+
+    let getAllNotes (ctx: SqliteContext) (documentVersionId: string) =
+        Operations.selectDocumentVersionNoteRecord ctx [ "WHERE document_version_id = @0" ] [ documentVersionId ]
+
+    let getLatestNoteVersion (ctx: SqliteContext) (noteId: string) =
+        Operations.selectDocumentVersionNoteVersionRecord
+            ctx
+            [ "WHERE document_version_note_id = @0 ORDER BY version DESC LIMIT 1" ]
+            [ noteId ]
+
+    let getLatestActiveNoteVersion (ctx: SqliteContext) (noteId: string) =
+        Operations.selectDocumentVersionNoteVersionRecord
+            ctx
+            [ "WHERE document_version_note_id = @0 AND active = TRUE ORDER BY version DESC LIMIT 1" ]
+            [ noteId ]
+
+    let activateNote (ctx: SqliteContext) (noteId: string) =
+        ctx.ExecuteVerbatimNonQueryAnon("UPDATE document_version_notes SET active = TRUE WHERE id = @0", [ noteId ])
+
+    let deactivateNote (ctx: SqliteContext) (noteId: string) =
+        ctx.ExecuteVerbatimNonQueryAnon("UPDATE document_version_notes SET active = FALSE WHERE id = @0", [ noteId ])
+
+    let activateNoteVersion (ctx: SqliteContext) (noteVersionId: string) =
+        ctx.ExecuteVerbatimNonQueryAnon("UPDATE document_version_note_versions SET active = TRUE WHERE id = @0", [ noteVersionId ])
+
+    let deactivateNoteVersion (ctx: SqliteContext) (noteVersionId: string) =
+        ctx.ExecuteVerbatimNonQueryAnon("UPDATE document_version_note_versions SET active = FALSE WHERE id = @0", [ noteVersionId ])
+
+    let addNote (ctx: SqliteContext) (id: IdType option) (documentVersionId: string) =
+        ({ Id = getId id
+           DocumentVersionId = documentVersionId
+           CreatedOn = getTimestamp ()
+           Active = true }
+        : Parameters.NewDocumentVersionNote)
+        |> Operations.insertDocumentVersionNote ctx
+
+    let addNoteVersion
+        (ctx: SqliteContext)
+        (id: IdType option)
+        (noteId: string)
+        (version: int)
+        (title: string)
+        (note: string)
+        =
+        use ms = new MemoryStream(note.ToUtf8Bytes())
+        let hash = ms.GetSHA256Hash()
+
+        ({ Id = getId id
+           DocumentVersionNoteId = noteId
+           Version = version
+           Title = title
+           Note = BlobField.FromStream ms
+           Hash = hash
+           CreatedOn = getTimestamp ()
+           Active = true }
+        : Parameters.NewDocumentVersionNoteVersion)
+        |> Operations.insertDocumentVersionNoteVersion ctx
+
+    let tryAddLatestNoteVersion
+        (ctx: SqliteContext)
+        (id: IdType option)
+        (noteId: string)
+        (title: string)
+        (note: string)
+        =
+        match getLatestNoteVersion ctx noteId with
+        | Some lnv -> addNoteVersion ctx id noteId (lnv.Version + 1) title note |> Ok
+        | None -> Error $"DocumentVersion note `{noteId}` does not exist"
+
+    let addNewNote (ctx: SqliteContext) (documentVersionId: string) (title: string) (note: string) =
+        let id = IdType.Create()
+        addNote ctx (Some id) documentVersionId
+        addNoteVersion ctx None (id.GetId()) 1 title note
+
+    let tryAddNewNote (ctx: SqliteContext) (documentVersionId: string) (title: string) (note: string) =
+        match get ctx documentVersionId with
+        | Some _ -> addNewNote ctx documentVersionId title note |> Ok
+        | None -> Error $"Document version `{documentVersionId}` does not exist"
+
