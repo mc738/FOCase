@@ -131,3 +131,41 @@ module ResourceVersions =
             "UPDATE resource_version_metadata SET active = FALSE WHERE resource_version_id = @0 AND item_key = @1",
             [ resourceVersionId; key ]
         )
+
+    // *** Tags ***
+
+    let getResourceVersionTag (ctx: SqliteContext) (resourceVersionId: string) (tag: string) =
+        Operations.selectResourceVersionTagRecord ctx [ "WHERE resource_version_id = @0 AND tag = @1" ] [ resourceVersionId; tag ]
+
+    let getAllResourceVersionTags (ctx: SqliteContext) (resourceVersionId: string) =
+        Operations.selectResourceVersionTagRecords ctx [ "WHERE resource_version_id = @0" ] [ resourceVersionId ]
+
+    let getAllActiveResourceVersionTags (ctx: SqliteContext) (resourceVersionId: string) =
+        Operations.selectResourceVersionTagRecords ctx [ "WHERE resource_version_id = @0 AND active = TRUE" ] [ resourceVersionId ]
+
+    let addResourceVersionTag (ctx: SqliteContext) (resourceVersionId: string) (tag: string) =
+        ({ ResourceVersionId = resourceVersionId
+           Tag = tag
+           CreatedOn = getTimestamp ()
+           Active = true }
+        : Parameters.NewResourceVersionTag)
+        |> Operations.insertResourceVersionTag ctx
+
+    let tryAddResourceVersionTag (ctx: SqliteContext) (resourceVersionId: string) (tag: string) =
+        match Tags.get ctx tag, get ctx resourceVersionId, getResourceVersionTag ctx resourceVersionId tag with
+        | None, _, _ -> Error $"Tag `{tag}` not found"
+        | _, None, _ -> Error $"Resource version `{resourceVersionId}` not found"
+        | _, _, Some _ -> Error $"Tag `{tag}` already attached to resource version `{resourceVersionId}`"
+        | Some l, Some n, None -> addResourceVersionTag ctx n.Id l.Name |> Ok
+
+    let activateResourceVersionTag (ctx: SqliteContext) (resourceVersionId: string) (tag: string) =
+        ctx.ExecuteVerbatimNonQueryAnon(
+            "UPDATE resource_version_tags SET active = TRUE WHERE resource_version_id = @0 AND tag = @1",
+            [ resourceVersionId; tag ]
+        )
+
+    let deactivateResourceVersionTag (ctx: SqliteContext) (resourceVersionId: string) (tag: string) =
+        ctx.ExecuteVerbatimNonQueryAnon(
+            "UPDATE resource_version_tags SET active = FALSE WHERE resource_version_id = @0 AND tag = @1",
+            [ resourceVersionId; tag ]
+        )
