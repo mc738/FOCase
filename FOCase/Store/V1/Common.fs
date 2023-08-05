@@ -126,14 +126,19 @@ module Common =
 
         let initialize (ctx: SqliteContext) =
             ctx.ExecuteInTransaction(createTables >> seedData)
-            
-     
-    let getTimestamp _ = DateTime.UtcNow       
-            
-    let getId (id: IdType option) = (id |> Option.defaultWith (fun _ -> IdType.Create())).GetId()
-    
-    
-    let labelWeightComparisonToSql (initialParameterIndex: int) (fieldName: string) (comparison: LabelWeightComparison) =
+
+
+    let getTimestamp _ = DateTime.UtcNow
+
+    let getId (id: IdType option) =
+        (id |> Option.defaultWith (fun _ -> IdType.Create())).GetId()
+
+
+    let labelWeightComparisonToSql
+        (initialParameterIndex: int)
+        (fieldName: string)
+        (comparison: LabelWeightComparison)
+        =
         let rec handler (parameterIndex: int) (com: LabelWeightComparison) =
             match com with
             | LabelWeightComparison.Equal value -> $"{fieldName} = @{parameterIndex}", [ box value ]
@@ -142,13 +147,56 @@ module Common =
             | LabelWeightComparison.GreaterThanOrEqual value -> $"{fieldName} >= @{parameterIndex}", [ box value ]
             | LabelWeightComparison.LessThan value -> $"{fieldName} < @{parameterIndex}", [ box value ]
             | LabelWeightComparison.LessThanOrEqual value -> $"{fieldName} <= @{parameterIndex}", [ box value ]
-            | LabelWeightComparison.Not comparison -> failwith "todo"
-            | LabelWeightComparison.And(comparisonA, comparisonB) -> failwith "todo"
-            | LabelWeightComparison.Or(comparisonA, comparisonB) -> failwith "todo"
-            | LabelWeightComparison.Any comparisons -> failwith "todo"
-            | LabelWeightComparison.All comparisons -> failwith "todo"
-            | LabelWeightComparison.None comparisons -> failwith "todo"
-            | LabelWeightComparison.WildCard -> failwith "todo"
-            
-        
+            | LabelWeightComparison.Not comparison ->
+                let c, p = handler parameterIndex comparison
+
+                $"NOT ({c})", p
+            | LabelWeightComparison.And(comparisonA, comparisonB) ->
+                let (ac, ap) = handler parameterIndex comparison
+
+                let (bc, bp) = handler (parameterIndex + ap.Length) comparison
+
+                $"({ac}) AND ({bc})", ap @ bp
+            | LabelWeightComparison.Or(comparisonA, comparisonB) ->
+                let (ac, ap) = handler parameterIndex comparison
+
+                let (bc, bp) = handler (parameterIndex + ap.Length) comparison
+
+                $"({ac}) OR ({bc})", ap @ bp
+            | LabelWeightComparison.Any comparisons ->
+                let (c, p) =
+                    comparisons
+                    |> List.fold
+                        (fun (c: string list, p: obj list) con ->
+                            let (nc, np) = handler (parameterIndex + p.Length) con
+
+                            c @ [ $"({nc})" ], p @ [ np ])
+                        ([], [])
+
+                c |> String.concat " OR ", p
+            | LabelWeightComparison.All comparisons ->
+                let (c, p) =
+                    comparisons
+                    |> List.fold
+                        (fun (c: string list, p: obj list) con ->
+                            let (nc, np) = handler (parameterIndex + p.Length) con
+
+                            c @ [ $"({nc})" ], p @ [ np ])
+                        ([], [])
+
+                c |> String.concat " AND ", p
+            | LabelWeightComparison.None comparisons ->
+                let (c, p) =
+                    comparisons
+                    |> List.fold
+                        (fun (c: string list, p: obj list) con ->
+                            let (nc, np) = handler (parameterIndex + p.Length) con
+
+                            c @ [ $"({nc})" ], p @ [ np ])
+                        ([], [])
+
+                c |> String.concat " AND " |> (fun r -> $"NOT ({r})", p)
+            | LabelWeightComparison.WildCard -> "1 = 1", []
+
+
         handler initialParameterIndex comparison
