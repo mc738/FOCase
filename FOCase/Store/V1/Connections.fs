@@ -129,3 +129,42 @@ module Connections =
             "UPDATE connection_labels SET weight = @0 WHERE connection_id = @1 AND label = @2",
             [ weight; connectionId; label ]
         )
+
+    // *** Tags ***
+
+    let getConnectionTag (ctx: SqliteContext) (connectionId: string) (tag: string) =
+        Operations.selectConnectionTagRecord ctx [ "WHERE connection_id = @0 AND tag = @1" ] [ connectionId; tag ]
+
+    let getAllConnectionTags (ctx: SqliteContext) (connectionId: string) =
+        Operations.selectConnectionTagRecords ctx [ "WHERE connection_id = @0" ] [ connectionId ]
+
+    let getAllActiveConnectionTags (ctx: SqliteContext) (connectionId: string) =
+        Operations.selectConnectionTagRecords ctx [ "WHERE connection_id = @0 AND active = TRUE" ] [ connectionId ]
+
+    let addConnectionTag (ctx: SqliteContext) (connectionId: string) (tag: string) =
+        ({ ConnectionId = connectionId
+           Tag = tag
+           CreatedOn = getTimestamp ()
+           Active = true }
+        : Parameters.NewConnectionTag)
+        |> Operations.insertConnectionTag ctx
+
+    let tryAddConnectionTag (ctx: SqliteContext) (connectionId: string) (tag: string) =
+        match Tags.get ctx tag, get ctx connectionId, getConnectionTag ctx connectionId tag with
+        | None, _, _ -> Error $"Tag `{tag}` not found"
+        | _, None, _ -> Error $"Connection `{connectionId}` not found"
+        | _, _, Some _ -> Error $"Tag `{tag}` already attached to connection `{connectionId}`"
+        | Some l, Some n, None -> addConnectionTag ctx n.Id l.Name |> Ok
+
+    let activateConnectionTag (ctx: SqliteContext) (connectionId: string) (tag: string) =
+        ctx.ExecuteVerbatimNonQueryAnon(
+            "UPDATE connection_tags SET active = TRUE WHERE connection_id = @0 AND tag = @1",
+            [ connectionId; tag ]
+        )
+
+    let deactivateConnectionTag (ctx: SqliteContext) (connectionId: string) (tag: string) =
+        ctx.ExecuteVerbatimNonQueryAnon(
+            "UPDATE connection_tags SET active = FALSE WHERE connection_id = @0 AND tag = @1",
+            [ connectionId; tag ]
+        )
+    
