@@ -27,13 +27,21 @@ module Nodes =
 
     let get (ctx: SqliteContext) (id: string) =
         Operations.selectNodeRecord ctx [ "WHERE id = @0" ] [ id ]
-        
-    let getAll (ctx:SqliteContext) =
-        Operations.selectNodeRecords ctx [] []
-        
+
+    let getAll (ctx: SqliteContext) = Operations.selectNodeRecords ctx [] []
+
     let getAllActive (ctx: SqliteContext) =
         Operations.selectNodeRecords ctx [ "WHERE active = TRUE" ] []
-    
+
+    let getForTag (ctx: SqliteContext) (tag: string) =
+        Operations.selectNodeRecords
+            ctx
+            [ "JOIN node_tags nt ON nodes.id = nt.node_id"
+              "WHERE nt.tag = @0" ]
+            [ tag ]
+
+
+
     let activate (ctx: SqliteContext) (id: string) =
         ctx.ExecuteVerbatimNonQueryAnon("UPDATE nodes SET active = TRUE WHERE id = @0", [ id ])
 
