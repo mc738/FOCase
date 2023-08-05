@@ -39,6 +39,9 @@ module Nodes =
             [ "JOIN node_tags nt ON nodes.id = nt.node_id"
               "WHERE nt.tag = @0" ]
             [ tag ]
+            
+    
+    let getForLabel (ctx: SqliteContext) 
 
 
 
