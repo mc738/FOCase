@@ -133,9 +133,22 @@ module Common =
     let getId (id: IdType option) = (id |> Option.defaultWith (fun _ -> IdType.Create())).GetId()
     
     
-    let labelWeightComparisonToSql (initialParameterIndex: int) (comparison: LabelWeightComparison) =
+    let labelWeightComparisonToSql (initialParameterIndex: int) (fieldName: string) (comparison: LabelWeightComparison) =
         let rec handler (parameterIndex: int) (com: LabelWeightComparison) =
-            ()
-        
+            match com with
+            | LabelWeightComparison.Equal value -> $"{fieldName} = @{parameterIndex}", [ box value ]
+            | LabelWeightComparison.NotEqual value -> $"{fieldName} <> @{parameterIndex}", [ box value ]
+            | LabelWeightComparison.GreaterThan value -> $"{fieldName} > @{parameterIndex}", [ box value ]
+            | LabelWeightComparison.GreaterThanOrEqual value -> $"{fieldName} >= @{parameterIndex}", [ box value ]
+            | LabelWeightComparison.LessThan value -> $"{fieldName} < @{parameterIndex}", [ box value ]
+            | LabelWeightComparison.LessThanOrEqual value -> $"{fieldName} <= @{parameterIndex}", [ box value ]
+            | LabelWeightComparison.Not comparison -> failwith "todo"
+            | LabelWeightComparison.And(comparisonA, comparisonB) -> failwith "todo"
+            | LabelWeightComparison.Or(comparisonA, comparisonB) -> failwith "todo"
+            | LabelWeightComparison.Any comparisons -> failwith "todo"
+            | LabelWeightComparison.All comparisons -> failwith "todo"
+            | LabelWeightComparison.None comparisons -> failwith "todo"
+            | LabelWeightComparison.WildCard -> failwith "todo"
+            
         
         handler initialParameterIndex comparison
