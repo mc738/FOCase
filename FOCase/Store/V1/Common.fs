@@ -1,5 +1,7 @@
 ﻿namespace FOCase.Store.V1
 
+open FOCase.Core
+
 [<AutoOpen>]
 module Common =
 
@@ -129,3 +131,11 @@ module Common =
     let getTimestamp _ = DateTime.UtcNow       
             
     let getId (id: IdType option) = (id |> Option.defaultWith (fun _ -> IdType.Create())).GetId()
+    
+    
+    let labelWeightComparisonToSql (initialParameterIndex: int) (comparison: LabelWeightComparison) =
+        let rec handler (parameterIndex: int) (com: LabelWeightComparison) =
+            ()
+        
+        
+        handler initialParameterIndex comparison
