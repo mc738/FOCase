@@ -3,9 +3,12 @@
 [<RequireQualifiedAccess>]
 module Connections =
 
+    open System.IO
+    open FsToolbox.Extensions.Streams
+    open FsToolbox.Extensions.Strings
+    open Freql.Core.Common.Types
     open Freql.Sqlite
     open FOCase.Core
-    open FOCase.Store
     open FOCase.Store.V1.Persistence
 
     // *** General ***
@@ -167,4 +170,90 @@ module Connections =
             "UPDATE connection_tags SET active = FALSE WHERE connection_id = @0 AND tag = @1",
             [ connectionId; tag ]
         )
-    
+        
+    // *** Notes ***
+
+    let getNote (ctx: SqliteContext) (noteId: string) =
+        Operations.selectConnectionNoteRecord ctx [ "WHERE note_id = @0" ] [ noteId ]
+
+    let getAllActiveNotes (ctx: SqliteContext) (connectionId: string) =
+        Operations.selectConnectionNoteRecord ctx [ "WHERE connection_id = @0 AND active = TRUE;" ] [ connectionId ]
+
+    let getAllNotes (ctx: SqliteContext) (connectionId: string) =
+        Operations.selectConnectionNoteRecord ctx [ "WHERE connection_id = @0" ] [ connectionId ]
+
+    let getLatestNoteVersion (ctx: SqliteContext) (noteId: string) =
+        Operations.selectConnectionNoteVersionRecord
+            ctx
+            [ "WHERE connection_note_id = @0 ORDER BY version DESC LIMIT 1" ]
+            [ noteId ]
+
+    let getLatestActiveNoteVersion (ctx: SqliteContext) (noteId: string) =
+        Operations.selectConnectionNoteVersionRecord
+            ctx
+            [ "WHERE connection_note_id = @0 AND active = TRUE ORDER BY version DESC LIMIT 1" ]
+            [ noteId ]
+
+    let activateNote (ctx: SqliteContext) (noteId: string) =
+        ctx.ExecuteVerbatimNonQueryAnon("UPDATE connection_notes SET active = TRUE WHERE id = @0", [ noteId ])
+
+    let deactivateNote (ctx: SqliteContext) (noteId: string) =
+        ctx.ExecuteVerbatimNonQueryAnon("UPDATE connection_notes SET active = FALSE WHERE id = @0", [ noteId ])
+
+    let activateNoteVersion (ctx: SqliteContext) (noteVersionId: string) =
+        ctx.ExecuteVerbatimNonQueryAnon("UPDATE connection_note_versions SET active = TRUE WHERE id = @0", [ noteVersionId ])
+
+    let deactivateNoteVersion (ctx: SqliteContext) (noteVersionId: string) =
+        ctx.ExecuteVerbatimNonQueryAnon("UPDATE connection_note_versions SET active = FALSE WHERE id = @0", [ noteVersionId ])
+
+
+    let addNote (ctx: SqliteContext) (id: IdType option) (connectionId: string) =
+        ({ Id = getId id
+           ConnectionId = connectionId
+           CreatedOn = getTimestamp ()
+           Active = true }
+        : Parameters.NewConnectionNote)
+        |> Operations.insertConnectionNote ctx
+
+    let addNoteVersion
+        (ctx: SqliteContext)
+        (id: IdType option)
+        (noteId: string)
+        (version: int)
+        (title: string)
+        (note: string)
+        =
+        use ms = new MemoryStream(note.ToUtf8Bytes())
+        let hash = ms.GetSHA256Hash()
+
+        ({ Id = getId id
+           ConnectionNoteId = noteId
+           Version = version
+           Title = title
+           Note = BlobField.FromStream ms
+           Hash = hash
+           CreatedOn = getTimestamp ()
+           Active = true }
+        : Parameters.NewConnectionNoteVersion)
+        |> Operations.insertConnectionNoteVersion ctx
+
+    let tryAddLatestNoteVersion
+        (ctx: SqliteContext)
+        (id: IdType option)
+        (noteId: string)
+        (title: string)
+        (note: string)
+        =
+        match getLatestNoteVersion ctx noteId with
+        | Some lnv -> addNoteVersion ctx id noteId (lnv.Version + 1) title note |> Ok
+        | None -> Error $"Connection note `{noteId}` does not exist"
+
+    let addNewNote (ctx: SqliteContext) (connectionId: string) (title: string) (note: string) =
+        let id = IdType.Create()
+        addNote ctx (Some id) connectionId
+        addNoteVersion ctx None (id.GetId()) 1 title note
+
+    let tryAddNewNote (ctx: SqliteContext) (connectionId: string) (title: string) (note: string) =
+        match get ctx connectionId with
+        | Some _ -> addNewNote ctx connectionId title note |> Ok
+        | None -> Error $"Connection `{connectionId}` does not exist"    
