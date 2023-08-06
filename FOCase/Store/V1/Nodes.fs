@@ -41,7 +41,8 @@ module Nodes =
             [ tag ]
             
     
-    let getForLabel (ctx: SqliteContext) 
+    let getForLabel (ctx: SqliteContext) (comparison: LabelWeightComparison) =
+        ()
 
 
 

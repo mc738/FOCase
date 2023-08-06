@@ -198,5 +198,4 @@ module Common =
                 c |> String.concat " AND " |> (fun r -> $"NOT ({r})", p)
             | LabelWeightComparison.WildCard -> "1 = 1", []
 
-
         handler initialParameterIndex comparison
