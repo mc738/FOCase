@@ -47,6 +47,14 @@ module Connections =
               "WHERE ct.tag = @0" ]
             [ tag ]
     
+    let getForLabel (ctx: SqliteContext) (label: string) (comparison: LabelWeightComparison) =
+        let (c, p) = labelWeightComparisonToSql 1 "cl.weight" comparison
+        
+        Operations.selectNodeRecords
+            ctx
+            [ "JOIN connection_labels cl ON connections.id = cl.connection_id"
+              $"WHERE cl.label = @0 AND ({c})" ]
+            (box label :: p)
     
     // *** Metadata ***
 
