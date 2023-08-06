@@ -39,7 +39,6 @@ module Nodes =
             [ "JOIN node_tags nt ON nodes.id = nt.node_id"
               "WHERE nt.tag = @0" ]
             [ tag ]
-            
     
     let getForLabel (ctx: SqliteContext) (label: string) (comparison: LabelWeightComparison) =
         let (c, p) = labelWeightComparisonToSql 1 "nl.weight" comparison
@@ -49,10 +48,7 @@ module Nodes =
             [ "JOIN node_labels nl ON nodes.id = nl.node_id"
               $"WHERE nt.tag = @0 AND ({c})" ]
             (box label :: p)
-            
-
-
-
+    
     let activate (ctx: SqliteContext) (id: string) =
         ctx.ExecuteVerbatimNonQueryAnon("UPDATE nodes SET active = TRUE WHERE id = @0", [ id ])
 

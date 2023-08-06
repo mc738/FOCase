@@ -40,6 +40,14 @@ module Connections =
     let getActiveToConnection (ctx: SqliteContext) (connectionId: string) =
         Operations.selectConnectionRecord ctx [ "WHERE to_node = @0 AND active = TRUE" ] [ connectionId ]
 
+    let getForTag (ctx: SqliteContext) (tag: string) =
+        Operations.selectConnectionRecords
+            ctx
+            [ "JOIN connection_tags ct ON connections.id = ct.connection_id"
+              "WHERE ct.tag = @0" ]
+            [ tag ]
+    
+    
     // *** Metadata ***
 
     let getMetadataValue (ctx: SqliteContext) (connectionId: string) (key: string) =
