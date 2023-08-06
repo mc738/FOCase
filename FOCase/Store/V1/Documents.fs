@@ -36,7 +36,14 @@ module Documents =
 
     let deactivate (ctx: SqliteContext) (id: string) =
         ctx.ExecuteVerbatimNonQueryAnon("UPDATE documents SET active = FALSE WHERE id = @0", [ id ])
-
+        
+    let getForTag (ctx: SqliteContext) (tag: string) =
+        Operations.selectDocumentRecords
+            ctx
+            [ "JOIN document_tags dt ON documents.id = dt.document_id"
+              "WHERE dt.tag = @0" ]
+            [ tag ]
+    
     // *** Meta data ***
     let getMetadataValue (ctx: SqliteContext) (documentId: string) (key: string) =
         Operations.selectDocumentMetadataItemRecord
