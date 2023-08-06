@@ -41,8 +41,15 @@ module Nodes =
             [ tag ]
             
     
-    let getForLabel (ctx: SqliteContext) (comparison: LabelWeightComparison) =
-        ()
+    let getForLabel (ctx: SqliteContext) (label: string) (comparison: LabelWeightComparison) =
+        let (c, p) = labelWeightComparisonToSql 1 "nl.weight" comparison
+        
+        Operations.selectNodeRecords
+            ctx
+            [ "JOIN node_labels nl ON nodes.id = nl.node_id"
+              $"WHERE nt.tag = @0 AND ({c})" ]
+            (box label :: p)
+            
 
 
 
