@@ -46,7 +46,7 @@ module Nodes =
         Operations.selectNodeRecords
             ctx
             [ "JOIN node_labels nl ON nodes.id = nl.node_id"
-              $"WHERE nt.tag = @0 AND ({c})" ]
+              $"WHERE nl.label = @0 AND ({c})" ]
             (box label :: p)
     
     let activate (ctx: SqliteContext) (id: string) =
