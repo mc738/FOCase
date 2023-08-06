@@ -35,6 +35,13 @@ module Resources =
 
     let deactivate (ctx: SqliteContext) (id: string) =
         ctx.ExecuteVerbatimNonQueryAnon("UPDATE resources SET active = FALSE WHERE id = @0", [ id ])
+        
+    let getForTag (ctx: SqliteContext) (tag: string) =
+        Operations.selectResourceRecords
+            ctx
+            [ "JOIN resource_tags rt ON resources.id = rt.resource_id"
+              "WHERE rt.tag = @0" ]
+            [ tag ]
 
     // *** Metadata ***
     
