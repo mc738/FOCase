@@ -1,14 +1,10 @@
 ﻿namespace FOCase.Store.V1
 
-open System.IO
-open System.Reflection.Emit
-open FOCase.Core
-open Freql.Core.Common.Types
-open Microsoft.FSharp.Core
-
 [<RequireQualifiedAccess>]
 module Nodes =
-
+    
+    open System.IO
+    open Freql.Core.Common.Types
     open FsToolbox.Extensions.Strings
     open FsToolbox.Extensions.Streams
     open Freql.Sqlite
