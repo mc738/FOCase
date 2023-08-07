@@ -11,6 +11,9 @@ module NodeResources =
     open FOCase.Core
     open FOCase.Store.V1.Persistence
         
+    let get (ctx: SqliteContext) (nodeResourceId: string) =
+        Operations.selectNodeResourceRecord ctx [ "WHERE id = @0" ] [ nodeResourceId ]
+        
     
     // *** Metadata ***
 
@@ -144,6 +147,6 @@ module NodeResources =
         addNoteVersion ctx None (id.GetId()) 1 title note
 
     let tryAddNewNote (ctx: SqliteContext) (nodeResourceId: string) (title: string) (note: string) =
-        match get ctx node_resourceId with
+        match get ctx nodeResourceId with
         | Some _ -> addNewNote ctx nodeResourceId title note |> Ok
         | None -> Error $"Node resource `{nodeResourceId}` does not exist"
