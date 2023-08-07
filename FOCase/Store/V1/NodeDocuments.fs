@@ -11,10 +11,9 @@ module NodeDocuments =
     open FOCase.Core
     open FOCase.Store.V1.Persistence
         
-    //let get 
-    
-    //()
-
+    let get (ctx: SqliteContext) (nodeDocumentId: string) =
+        Operations.selectNodeDocumentRecord ctx [ "WHERE id = @0" ] [ nodeDocumentId ]
+        
     // *** Metadata ***
 
     let getMetadataValue (ctx: SqliteContext) (node_documentId: string) (key: string) =
