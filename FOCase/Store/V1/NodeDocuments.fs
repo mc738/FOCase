@@ -1,6 +1,6 @@
 ﻿namespace FOCase.Store.V1
 
-
+[<RequireQualifiedAccess>]
 module NodeDocuments =
 
     open System.IO
