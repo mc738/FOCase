@@ -11,6 +11,9 @@ module ConnectionDocuments =
     open FOCase.Core
     open FOCase.Store.V1.Persistence
     
+    let get (ctx: SqliteContext) (connectionDocumentId: string) =
+        Operations.selectConnectionDocumentRecord ctx [ "WHERE id = @0" ] [ connectionDocumentId ]
+    
     // *** Metadata ***
 
     let getMetadataValue (ctx: SqliteContext) (connection_documentId: string) (key: string) =
