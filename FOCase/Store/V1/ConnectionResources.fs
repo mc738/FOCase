@@ -11,6 +11,8 @@ module ConnectionResources =
     open FOCase.Core
     open FOCase.Store.V1.Persistence
         
+    let get (ctx: SqliteContext) (nodeResourceId: string) =
+        Operations.selectNodeResourceRecord ctx [ "WHERE id = @0" ] [ nodeResourceId ]
     
     // *** Metadata ***
 

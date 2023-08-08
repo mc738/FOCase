@@ -13,7 +13,6 @@ module NodeResources =
         
     let get (ctx: SqliteContext) (nodeResourceId: string) =
         Operations.selectNodeResourceRecord ctx [ "WHERE id = @0" ] [ nodeResourceId ]
-      
     
     // *** Metadata ***
 
