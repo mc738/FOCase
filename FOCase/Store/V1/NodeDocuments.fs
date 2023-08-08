@@ -145,6 +145,6 @@ module NodeDocuments =
         addNoteVersion ctx None (id.GetId()) 1 title note
 
     let tryAddNewNote (ctx: SqliteContext) (nodeDocumentId: string) (title: string) (note: string) =
-        match get ctx node_documentId with
+        match get ctx nodeDocumentId with
         | Some _ -> addNewNote ctx nodeDocumentId title note |> Ok
         | None -> Error $"Node document `{nodeDocumentId}` does not exist"
