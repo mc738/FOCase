@@ -23,6 +23,7 @@
         <Compile Include="Store\V1\Connections.fs" />
         <Compile Include="Store\V1\NodeDocuments.fs" />
         <Compile Include="Store\V1\NodeResources.fs" />
+        <Compile Include="Store\V1\ConnectionDocuments.fs" />
     </ItemGroup>
 
     <ItemGroup>
