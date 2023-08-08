@@ -24,6 +24,7 @@
         <Compile Include="Store\V1\NodeDocuments.fs" />
         <Compile Include="Store\V1\NodeResources.fs" />
         <Compile Include="Store\V1\ConnectionDocuments.fs" />
+        <Compile Include="Store\V1\ConnectionResources.fs" />
     </ItemGroup>
 
     <ItemGroup>
