@@ -14,6 +14,12 @@ module NodeResources =
     let get (ctx: SqliteContext) (nodeResourceId: string) =
         Operations.selectNodeResourceRecord ctx [ "WHERE id = @0" ] [ nodeResourceId ]
     
+    let getAllForNode (ctx:SqliteContext) (connectionId: string) =
+        Operations.selectNodeResourceRecords ctx [ "WHERE node_id = @0" ] [ connectionId ]
+        
+    let getAllForResourceVersion (ctx:SqliteContext) (resourceVersionId: string) =
+        Operations.selectNodeResourceRecords ctx [ "WHERE resource_version_id = @0" ] [ resourceVersionId ]
+    
     // *** Metadata ***
 
     let getMetadataValue (ctx: SqliteContext) (nodeResourceId: string) (key: string) =
