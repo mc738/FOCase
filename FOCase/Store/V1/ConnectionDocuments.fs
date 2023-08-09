@@ -14,6 +14,13 @@ module ConnectionDocuments =
     let get (ctx: SqliteContext) (connectionDocumentId: string) =
         Operations.selectConnectionDocumentRecord ctx [ "WHERE id = @0" ] [ connectionDocumentId ]
     
+    
+    let getAllForConnection (ctx:SqliteContext) (connectionId: string) =
+        Operations.selectConnectionDocumentRecords ctx [ "WHERE connection_id = @0" ] [ connectionId ]
+        
+    let getAllForDocumentVersion (ctx:SqliteContext) (documentVersionId: string) =
+        Operations.selectConnectionDocumentRecords ctx [ "WHERE document_version_id = @0" ] [ documentVersionId ]
+    
     // *** Metadata ***
 
     let getMetadataValue (ctx: SqliteContext) (connection_documentId: string) (key: string) =

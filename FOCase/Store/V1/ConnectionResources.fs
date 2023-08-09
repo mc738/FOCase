@@ -17,7 +17,7 @@ module ConnectionResources =
     let getAllForConnection (ctx:SqliteContext) (connectionId: string) =
         Operations.selectConnectionResourceRecords ctx [ "WHERE connection_id = @0" ] [ connectionId ]
         
-    let getAllForResourceVersions (ctx:SqliteContext) (resourceVersionId: string) =
+    let getAllForResourceVersion (ctx:SqliteContext) (resourceVersionId: string) =
         Operations.selectConnectionResourceRecords ctx [ "WHERE resource_version_id = @0" ] [ resourceVersionId ]
     
     // *** Metadata ***
