@@ -7,6 +7,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documentation", "Documentat
 		LICENSE = LICENSE
 	EndProjectSection
 EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FOCase.CLI", "FOCase.CLI\FOCase.CLI.fsproj", "{63678834-A85E-4763-8A11-5D9E0DFD0ED1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -17,5 +19,9 @@ Global
 		{40D73B8B-6214-437C-8093-C3A78484351D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{40D73B8B-6214-437C-8093-C3A78484351D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{40D73B8B-6214-437C-8093-C3A78484351D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{63678834-A85E-4763-8A11-5D9E0DFD0ED1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{63678834-A85E-4763-8A11-5D9E0DFD0ED1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{63678834-A85E-4763-8A11-5D9E0DFD0ED1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{63678834-A85E-4763-8A11-5D9E0DFD0ED1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
