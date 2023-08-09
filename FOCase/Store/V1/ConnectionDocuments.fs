@@ -14,7 +14,6 @@ module ConnectionDocuments =
     let get (ctx: SqliteContext) (connectionDocumentId: string) =
         Operations.selectConnectionDocumentRecord ctx [ "WHERE id = @0" ] [ connectionDocumentId ]
     
-    
     let getAllForConnection (ctx:SqliteContext) (connectionId: string) =
         Operations.selectConnectionDocumentRecords ctx [ "WHERE connection_id = @0" ] [ connectionId ]
         

@@ -13,7 +13,13 @@ module NodeDocuments =
         
     let get (ctx: SqliteContext) (nodeDocumentId: string) =
         Operations.selectNodeDocumentRecord ctx [ "WHERE id = @0" ] [ nodeDocumentId ]
+    
+    let getAllForNode (ctx:SqliteContext) (connectionId: string) =
+        Operations.selectNodeDocumentRecords ctx [ "WHERE node_id = @0" ] [ connectionId ]
         
+    let getAllForDocumentVersion (ctx:SqliteContext) (documentVersionId: string) =
+        Operations.selectNodeDocumentRecords ctx [ "WHERE document_version_id = @0" ] [ documentVersionId ]
+    
     // *** Metadata ***
 
     let getMetadataValue (ctx: SqliteContext) (node_documentId: string) (key: string) =
