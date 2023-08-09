@@ -7,10 +7,9 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <Compile Include="Program.fs" />
-    </ItemGroup>
-
-    <ItemGroup>
+      <Compile Include="App\State.fs" />
+      <Compile Include="App\Commands.fs" />
+      <Compile Include="Program.fs" />
       <Content Include="..\.dockerignore">
         <Link>.dockerignore</Link>
       </Content>
