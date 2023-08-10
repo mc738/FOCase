@@ -10,9 +10,8 @@ module Utils =
 
     let printLines (lines: string list) = lines |> List.iter Console.WriteLine
 
-    let optionPrompt (prompt: string) (options: Option list) =
-        Console.WriteLine prompt
-
+    let optionPrompt (prompt: string) (marker: string option) (options: Option list) =
+        
         let printOptions _ =
             options
             |> List.iteri (fun i o ->
@@ -23,21 +22,35 @@ module Utils =
 
 
         let rec handler _ =
+            Console.WriteLine prompt
+
             printOptions ()
 
+            match marker with
+            | Some m -> printf $"{marker} > "
+            | None -> printf "> "
+            
             let input = Console.ReadLine()
 
-            let selectedOption =
-                options
-                |> List.tryFind (fun o ->
-                    o.AcceptedValues
-                    |> List.exists (fun av -> System.String.Equals(input, av, StringComparison.OrdinalIgnoreCase)))
-
-            match selectedOption with
-            | Some so -> so
-            | None ->
-                printfn $"Unknown option: {input}"
+            match input with
+            | "clr"
+            | "clear" ->
+                Console.Clear()
                 handler ()
+            | _ ->
+                
+                let selectedOption =
+                    options
+                    |> List.tryFind (fun o ->
+                        o.AcceptedValues
+                        |> List.exists (fun av -> System.String.Equals(input, av, StringComparison.OrdinalIgnoreCase)))
+
+                match selectedOption with
+                | Some so -> so
+                | None ->
+                    printfn $"Unknown option: {input}"
+                    printfn ""
+                    handler ()
 
         handler ()
 
@@ -52,16 +65,12 @@ let banner =
       ""
       "Version: 0.1 " ]
 
-let initialOptions =
-    [ "Choose an option:"; "1. New case (new/n/1)"; "2. Load case (load/l/2)" ]
-
-
 banner |> List.iter Console.WriteLine
-initialOptions |> List.iter Console.WriteLine
 
 let option =
     Utils.optionPrompt
         "Choose an option:"
+        None
         [ { Name = "New case"
             Details = None
             AcceptedValues = [ "new"; "n" ] }
@@ -70,5 +79,3 @@ let option =
             AcceptedValues = [ "load"; "l" ] } ]
 
 printfn $"Selected option: {option.Name}"
-
-Console.ReadLine()
