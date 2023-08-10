@@ -5,19 +5,25 @@ module Common =
     
     open System
     
-    type UserOption =
+    type OptionPromptItem =
         { Name: string
           Details: string option
           AcceptedValues: string list }
 
+    type OptionPrompt =
+        {
+            Prompt: string
+            Marker: string option
+            Items: OptionPromptItem list
+        }
     
     
     let printLines (lines: string list) = lines |> List.iter Console.WriteLine
 
-    let optionPrompt (prompt: string) (marker: string option) (options: UserOption list) =
+    let optionPrompt (options: OptionPrompt) =
         
         let printOptions _ =
-            options
+            options.Items
             |> List.iteri (fun i o ->
                 let acceptedValues = o.AcceptedValues |> String.concat " / "
 
@@ -26,12 +32,12 @@ module Common =
 
 
         let rec handler _ =
-            Console.WriteLine prompt
+            Console.WriteLine options.Prompt
 
             printOptions ()
 
-            match marker with
-            | Some m -> printf $"{marker} > "
+            match options.Marker with
+            | Some m -> printf $"{m} > "
             | None -> printf "> "
             
             let input = Console.ReadLine()
@@ -44,7 +50,7 @@ module Common =
             | _ ->
                 
                 let selectedOption =
-                    options
+                    options.Items
                     |> List.tryFind (fun o ->
                         o.AcceptedValues
                         |> List.exists (fun av -> System.String.Equals(input, av, StringComparison.OrdinalIgnoreCase)))
