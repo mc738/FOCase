@@ -2,26 +2,23 @@
 
 [<AutoOpen>]
 module Common =
-    
+
     open System
-    
+
     type OptionPromptItem =
         { Name: string
           Details: string option
           AcceptedValues: string list }
 
     type OptionPrompt =
-        {
-            Prompt: string
-            Marker: string option
-            Items: OptionPromptItem list
-        }
-    
-    
+        { Prompt: string
+          Marker: string option
+          Items: OptionPromptItem list }
+
     let printLines (lines: string list) = lines |> List.iter Console.WriteLine
 
     let optionPrompt (options: OptionPrompt) =
-        
+
         let printOptions _ =
             options.Items
             |> List.iteri (fun i o ->
@@ -39,7 +36,7 @@ module Common =
             match options.Marker with
             | Some m -> printf $"{m} > "
             | None -> printf "> "
-            
+
             let input = Console.ReadLine()
 
             match input with
@@ -48,7 +45,7 @@ module Common =
                 Console.Clear()
                 handler ()
             | _ ->
-                
+
                 let selectedOption =
                     options.Items
                     |> List.tryFind (fun o ->
@@ -63,5 +60,17 @@ module Common =
                     handler ()
 
         handler ()
-    
 
+
+    let banner =
+        [ "▄████  ████▄ ▄█▄    ██      ▄▄▄▄▄   ▄███▄   "
+          "█▀   ▀ █   █ █▀ ▀▄  █ █    █     ▀▄ █▀   ▀  "
+          "█▀▀    █   █ █   ▀  █▄▄█ ▄  ▀▀▀▀▄   ██▄▄    "
+          "█      ▀████ █▄  ▄▀ █  █  ▀▄▄▄▄▀    █▄   ▄▀ "
+          " █           ▀███▀     █            ▀███▀   "
+          "  ▀                   █                     "
+          "                     ▀                      "
+          ""
+          "Version: 0.1 " ]
+
+    let printBanner _ = printLines banner
