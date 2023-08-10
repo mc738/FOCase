@@ -7,6 +7,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <Compile Include="App\Common.fs" />
       <Compile Include="App\State.fs" />
       <Compile Include="App\Commands.fs" />
       <Compile Include="Program.fs" />
