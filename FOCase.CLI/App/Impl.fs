@@ -39,7 +39,7 @@ module Impl =
                 | StateContext.Case ->
                     handleCaseContext ()
                     
-                | StateContext.Node nodeStateContext -> failwith "todo"
+                | StateContext.Node nodeStateContext -> handleNodeContext nodeStateContext
                 | StateContext.Connection connectionStateContext -> failwith "todo"
                 | StateContext.Document documentStateContext -> failwith "todo"
                 | StateContext.Resource resourceStateContext -> failwith "todo"
