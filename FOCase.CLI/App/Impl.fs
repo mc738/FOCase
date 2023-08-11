@@ -29,11 +29,16 @@ module Impl =
 
         let handleCaseContext _ =
             ()
+            
+        let handleNodeContext (nodeCtx: NodeStateContext) =
+            ()
         
         let runLoop (ctx:SqliteContext) =
             let rec loop (state: ApplicationState) =
                 match state.CurrentStateItem.Context with
-                | StateContext.Case -> failwith "todo"
+                | StateContext.Case ->
+                    handleCaseContext ()
+                    
                 | StateContext.Node nodeStateContext -> failwith "todo"
                 | StateContext.Connection connectionStateContext -> failwith "todo"
                 | StateContext.Document documentStateContext -> failwith "todo"
