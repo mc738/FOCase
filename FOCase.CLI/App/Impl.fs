@@ -1,5 +1,7 @@
 ﻿namespace FOCase.CLI.App
 
+open Freql.Sqlite
+
 [<AutoOpen>]
 module Impl =
 
@@ -22,13 +24,18 @@ module Impl =
 
         ()
 
+        let runLoop (ctx:SqliteContext) = ()
+    
+    
     let run _ =
 
         printBanner ()
         let mode = optionPrompt initialOptions
 
-        match mode.Name with
-        |
+        match mode.Value with
+        | "new" -> ()
+        | "load" -> ()
+        | _ -> ()
 
 
         ()
