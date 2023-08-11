@@ -11,9 +11,11 @@ module Impl =
                Marker = None
                Items =
                  [ { Name = "New case"
+                     Value = "new"
                      Details = None
                      AcceptedValues = [ "new"; "n" ] }
-                   { Name = "New case"
+                   { Name = "Load case"
+                     Value = "load"
                      Details = None
                      AcceptedValues = [ "load"; "l" ] } ] }
             : OptionPrompt)
@@ -25,6 +27,8 @@ module Impl =
         printBanner ()
         let mode = optionPrompt initialOptions
 
+        match mode.Name with
+        |
 
 
         ()

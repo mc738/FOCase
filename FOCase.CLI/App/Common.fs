@@ -7,6 +7,7 @@ module Common =
 
     type OptionPromptItem =
         { Name: string
+          Value: string
           Details: string option
           AcceptedValues: string list }
 
