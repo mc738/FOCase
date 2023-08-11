@@ -27,6 +27,9 @@ module Impl =
 
         ()
 
+        let handleCaseContext _ =
+            ()
+        
         let runLoop (ctx:SqliteContext) =
             let rec loop (state: ApplicationState) =
                 match state.CurrentStateItem.Context with
