@@ -18,7 +18,6 @@ module State =
 
     and ResourceStateContext = { Id: string }
 
-
     type StateItem =
         { ParentState: StateItem option
           Context: StateContext }

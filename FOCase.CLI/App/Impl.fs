@@ -1,10 +1,13 @@
 ﻿namespace FOCase.CLI.App
 
-open Freql.Sqlite
+open FOCase.CLI.App.State
 
 [<AutoOpen>]
 module Impl =
-
+        
+    open Freql.Sqlite
+    open FOCase.CLI.App.State
+    
     [<AutoOpen>]
     module private Internal =
 
@@ -24,7 +27,21 @@ module Impl =
 
         ()
 
-        let runLoop (ctx:SqliteContext) = ()
+        let runLoop (ctx:SqliteContext) =
+            let rec loop (state: ApplicationState) =
+                match state.CurrentStateItem.Context with
+                | StateContext.Case -> failwith "todo"
+                | StateContext.Node nodeStateContext -> failwith "todo"
+                | StateContext.Connection connectionStateContext -> failwith "todo"
+                | StateContext.Document documentStateContext -> failwith "todo"
+                | StateContext.Resource resourceStateContext -> failwith "todo"
+                
+                
+                ()
+            
+            loop (ApplicationState.Create())
+            
+            ()
     
     
     let run _ =
