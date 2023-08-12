@@ -1,5 +1,6 @@
 ﻿namespace FOCase.CLI.App
 
+open System
 open FOCase.CLI.App.State
 
 [<AutoOpen>]
@@ -11,6 +12,14 @@ module Impl =
     [<AutoOpen>]
     module private Internal =
 
+        let tryGetEnvValue (name: string) =
+            let v = Environment.GetEnvironmentVariable(name)
+            
+            match String.IsNullOrWhiteSpace v |> not with
+            | true -> Some v
+            | false -> None
+        
+        
         let initialOptions =
             ({ Prompt = ""
                Marker = None
