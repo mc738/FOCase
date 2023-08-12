@@ -2,6 +2,7 @@
 
 open System
 open System.IO
+open System.Reflection.Metadata
 open FOCase.CLI.App.State
 
 [<AutoOpen>]
@@ -37,22 +38,25 @@ module Impl =
                Marker = None }
             : InputPrompt)
 
-        
         let handleCaseContext _ = ()
 
         let handleNodeContext (nodeCtx: NodeStateContext) = ()
         
         let handleConnectionContext (connectionCtx: ConnectionStateContext) = ()
 
+        let handleDocumentContext (documentCtx: DocumentStateContext) = ()
+        
+        let handleResourceContext (resourceCtx: ResourceStateContext) = ()
+        
         let runLoop (ctx: SqliteContext) =
             let rec loop (state: ApplicationState) =
                 match state.CurrentStateItem.Context with
                 | StateContext.Case -> handleCaseContext ()
 
                 | StateContext.Node nodeStateContext -> handleNodeContext nodeStateContext
-                | StateContext.Connection connectionStateContext -> failwith "todo"
-                | StateContext.Document documentStateContext -> failwith "todo"
-                | StateContext.Resource resourceStateContext -> failwith "todo"
+                | StateContext.Connection connectionStateContext -> handleConnectionContext connectionStateContext
+                | StateContext.Document documentStateContext -> handleDocumentContext documentStateContext
+                | StateContext.Resource resourceStateContext -> handleResourceContext resourceStateContext
 
 
                 ()
