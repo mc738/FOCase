@@ -16,6 +16,12 @@ module Common =
           Marker: string option
           Items: OptionPromptItem list }
 
+    type InputPrompt =
+        {
+            Prompt: string
+            Marker: string option
+        }
+    
     let printLines (lines: string list) = lines |> List.iter Console.WriteLine
 
     let optionPrompt (options: OptionPrompt) =
@@ -61,6 +67,15 @@ module Common =
                     handler ()
 
         handler ()
+
+    let getInput (options: InputPrompt) =
+        printfn $"{options.Prompt}"
+        
+        match options.Marker with
+        | Some m -> printf $"{m} > "
+        | None -> printf "> "
+        
+        Console.ReadLine()
 
 
     let banner =
