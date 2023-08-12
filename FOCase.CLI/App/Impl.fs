@@ -82,7 +82,11 @@ module Impl =
         let mode = optionPrompt initialOptions
 
         match mode.Value with
-        | "new" -> ()
+        | "new" ->
+            
+            
+            
+            ()
         | "load" -> ()
         | _ -> ()
 
