@@ -1,6 +1,7 @@
 ﻿namespace FOCase.CLI.App
 
 open System
+open System.IO
 open FOCase.CLI.App.State
 
 [<AutoOpen>]
@@ -20,6 +21,18 @@ module Impl =
             | false -> None
         
         
+        let resolvePath (value: string) =
+            // Check if the path is fully qualified (i.e C://path) or just a name.
+            match Path.IsPathFullyQualified value with
+            | true -> value
+            | false ->
+                match Path.IsPathRooted value with
+                | true -> Path.GetFullPath value
+                | false ->            
+                    match tryGetEnvValue "FOCASE_PATH" with
+                    | Some p -> Path.Combine(p, value)
+                    | None -> Path.Combine(Environment.CurrentDirectory, value)
+            
         let initialOptions =
             ({ Prompt = ""
                Marker = None
@@ -35,6 +48,8 @@ module Impl =
             : OptionPrompt)
 
         ()
+        
+        
 
         let handleCaseContext _ =
             ()
