@@ -38,33 +38,44 @@ module Impl =
                Marker = None }
             : InputPrompt)
 
+        [<RequireQualifiedAccess>]
+        type OperationResult =
+            | NoStateChange
+            | PushState of StateContext
+            | PopState
+            | Exit
 
+        let handleCaseContext (ctx: SqliteContext) = OperationResult.NoStateChange
 
-        let handleCaseContext (ctx: SqliteContext) = ()
+        let handleNodeContext (ctx: SqliteContext) (nodeCtx: NodeStateContext) = OperationResult.NoStateChange
 
-        let handleNodeContext (ctx: SqliteContext) (nodeCtx: NodeStateContext) = ()
+        let handleConnectionContext (ctx: SqliteContext) (connectionCtx: ConnectionStateContext) =
+            OperationResult.NoStateChange
 
-        let handleConnectionContext (ctx: SqliteContext) (connectionCtx: ConnectionStateContext) = ()
+        let handleDocumentContext (ctx: SqliteContext) (documentCtx: DocumentStateContext) =
+            OperationResult.NoStateChange
 
-        let handleDocumentContext (ctx: SqliteContext) (documentCtx: DocumentStateContext) = ()
-
-        let handleResourceContext (ctx: SqliteContext) (resourceCtx: ResourceStateContext) = ()
+        let handleResourceContext (ctx: SqliteContext) (resourceCtx: ResourceStateContext) =
+            OperationResult.NoStateChange
 
         let runLoop (ctx: SqliteContext) =
             let rec loop (state: ApplicationState) =
-                match state.CurrentStateItem.Context with
-                | StateContext.Case -> handleCaseContext ctx
-                | StateContext.Node nodeStateContext -> handleNodeContext ctx nodeStateContext
-                | StateContext.Connection connectionStateContext -> handleConnectionContext ctx connectionStateContext
-                | StateContext.Document documentStateContext -> handleDocumentContext ctx documentStateContext
-                | StateContext.Resource resourceStateContext -> handleResourceContext ctx resourceStateContext
+                let result =
+                    match state.CurrentStateItem.Context with
+                    | StateContext.Case -> handleCaseContext ctx
+                    | StateContext.Node nodeStateContext -> handleNodeContext ctx nodeStateContext
+                    | StateContext.Connection connectionStateContext ->
+                        handleConnectionContext ctx connectionStateContext
+                    | StateContext.Document documentStateContext -> handleDocumentContext ctx documentStateContext
+                    | StateContext.Resource resourceStateContext -> handleResourceContext ctx resourceStateContext
 
-
-                ()
+                match result with
+                | OperationResult.NoStateChange -> loop state
+                | OperationResult.PushState stateContext -> loop (state.PushState stateContext)
+                | OperationResult.PopState -> loop (state.PopState())
+                | OperationResult.Exit -> ()
 
             loop (ApplicationState.Create())
-
-            ()
 
 
     let run _ =
