@@ -37,9 +37,12 @@ module Impl =
                Marker = None }
             : InputPrompt)
 
+        
         let handleCaseContext _ = ()
 
         let handleNodeContext (nodeCtx: NodeStateContext) = ()
+        
+        let handleConnectionContext (connectionCtx: ConnectionStateContext) = ()
 
         let runLoop (ctx: SqliteContext) =
             let rec loop (state: ApplicationState) =
