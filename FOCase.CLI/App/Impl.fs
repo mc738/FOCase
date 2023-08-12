@@ -32,31 +32,32 @@ module Impl =
             ({ Prompt = "Enter a case name:"
                Marker = None }
             : InputPrompt)
-            
+
         let loadInputPrompt =
             ({ Prompt = "Enter a case path:"
                Marker = None }
             : InputPrompt)
 
-        let handleCaseContext _ = ()
 
-        let handleNodeContext (nodeCtx: NodeStateContext) = ()
-        
-        let handleConnectionContext (connectionCtx: ConnectionStateContext) = ()
 
-        let handleDocumentContext (documentCtx: DocumentStateContext) = ()
-        
-        let handleResourceContext (resourceCtx: ResourceStateContext) = ()
-        
+        let handleCaseContext (ctx: SqliteContext) = ()
+
+        let handleNodeContext (ctx: SqliteContext) (nodeCtx: NodeStateContext) = ()
+
+        let handleConnectionContext (ctx: SqliteContext) (connectionCtx: ConnectionStateContext) = ()
+
+        let handleDocumentContext (ctx: SqliteContext) (documentCtx: DocumentStateContext) = ()
+
+        let handleResourceContext (ctx: SqliteContext) (resourceCtx: ResourceStateContext) = ()
+
         let runLoop (ctx: SqliteContext) =
             let rec loop (state: ApplicationState) =
                 match state.CurrentStateItem.Context with
-                | StateContext.Case -> handleCaseContext ()
-
-                | StateContext.Node nodeStateContext -> handleNodeContext nodeStateContext
-                | StateContext.Connection connectionStateContext -> handleConnectionContext connectionStateContext
-                | StateContext.Document documentStateContext -> handleDocumentContext documentStateContext
-                | StateContext.Resource resourceStateContext -> handleResourceContext resourceStateContext
+                | StateContext.Case -> handleCaseContext ctx
+                | StateContext.Node nodeStateContext -> handleNodeContext ctx nodeStateContext
+                | StateContext.Connection connectionStateContext -> handleConnectionContext ctx connectionStateContext
+                | StateContext.Document documentStateContext -> handleDocumentContext ctx documentStateContext
+                | StateContext.Resource resourceStateContext -> handleResourceContext ctx resourceStateContext
 
 
                 ()
