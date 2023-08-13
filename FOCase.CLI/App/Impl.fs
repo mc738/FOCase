@@ -63,6 +63,8 @@ module Impl =
                     handle ()
                 | "exit"
                 | "-e" -> OperationResult.Exit
+                | "back"
+                | ".." -> OperationResult.PopState
                 | cmd when cmd.StartsWith("node") ->
                     
                     
