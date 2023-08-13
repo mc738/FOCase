@@ -95,8 +95,25 @@ module Impl =
             handle ()
             
         let handleConnectionContext (ctx: SqliteContext) (connectionCtx: ConnectionStateContext) =
-            OperationResult.NoStateChange
-
+            let rec handle () =
+                match getInput { Prompt = "Enter a command"; Marker = None } with
+                | "" -> handle ()
+                | "clear"
+                | "cls"
+                | "clr"
+                | "-c" -> handleClear ()
+                | "help"
+                | "-h" ->
+                    
+                    handle ()
+                | "exit"
+                | "-e" -> OperationResult.Exit
+                | cmd ->
+                    printfn $"Unknown command: `{cmd}`"
+                    handle ()
+            
+            handle ()
+            
         let handleDocumentContext (ctx: SqliteContext) (documentCtx: DocumentStateContext) =
             OperationResult.NoStateChange
 
