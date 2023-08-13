@@ -45,6 +45,10 @@ module Impl =
             | PopState
             | Exit
 
+        let handleClear _ =
+            Console.Clear ()
+            OperationResult.NoStateChange
+        
         let handleCaseContext (ctx: SqliteContext) = OperationResult.NoStateChange
 
         let handleNodeContext (ctx: SqliteContext) (nodeCtx: NodeStateContext) = OperationResult.NoStateChange
