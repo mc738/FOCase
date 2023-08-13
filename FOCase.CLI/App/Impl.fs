@@ -134,6 +134,8 @@ module Impl =
                     handle ()
                 | "exit"
                 | "-e" -> OperationResult.Exit
+                | "back"
+                | ".." -> OperationResult.PopState
                 | cmd ->
                     printfn $"Unknown command: `{cmd}`"
                     handle ()
