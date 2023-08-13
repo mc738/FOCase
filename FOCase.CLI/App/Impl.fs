@@ -49,7 +49,30 @@ module Impl =
             Console.Clear ()
             OperationResult.NoStateChange
         
-        let handleCaseContext (ctx: SqliteContext) = OperationResult.NoStateChange
+        let handleCaseContext (ctx: SqliteContext) =
+            let rec handle () =
+                match getInput { Prompt = "Enter a command"; Marker = None } with
+                | ""
+                | "clear"
+                | "cls"
+                | "clr"
+                | "-c" -> handleClear ()
+                | "help"
+                | "-h" ->
+                    
+                    handle ()
+                | "exit"
+                | "-e" -> OperationResult.Exit
+                | cmd when cmd.StartsWith("node") ->
+                    
+                    
+                    OperationResult.NoStateChange
+                | cmd ->
+                    printfn $"Unknown command: `{cmd}`"
+                    handle ()
+                
+                
+            handle ()
 
         let handleNodeContext (ctx: SqliteContext) (nodeCtx: NodeStateContext) = OperationResult.NoStateChange
 
