@@ -2,6 +2,12 @@
 
 module Queries =
     
+    type QueryTarget =
+        | Nodes
+        | Connections
+        | Resources
+        | Documents
+    
     let parse () =
         ()
 
