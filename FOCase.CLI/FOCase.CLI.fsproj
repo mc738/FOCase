@@ -10,7 +10,6 @@
       <Compile Include="App\Common.fs" />
       <Compile Include="App\State.fs" />
       <Compile Include="App\Commands.fs" />
-      <Compile Include="App\Queries.fs" />
       <Compile Include="App\Impl.fs" />
       <Compile Include="Program.fs" />
       <Content Include="..\.dockerignore">

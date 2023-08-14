@@ -30,5 +30,3 @@ module Common =
         | LessThan of Value: decimal
         | LessThanOrEqual of Value: decimal
     
-    ()
-
