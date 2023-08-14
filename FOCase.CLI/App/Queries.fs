@@ -2,7 +2,12 @@
 
 module Queries =
     
-    type QueryTarget =
+    type Query =
+        {
+            Target: QueryTarget
+        }
+        
+    and QueryTarget =
         | Nodes
         | Connections
         | Resources
